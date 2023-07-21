@@ -1,0 +1,21 @@
+{
+    "name": "@scom/demo-scom-investor-claim",
+    "version": "0.1.0",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "dependencies": {
+        "@ijstech/components": "^0.1.47"
+    },
+    "devDependencies": {
+        "@ijstech/cli": "^0.1.28",
+        "@ijstech/compiler": "^0.1.22",
+        "@scom/scom-investor-claim": "file:./ref"
+    },
+    "scripts": {
+        "cp:libs": "rm -rf ref && mkdir ref && cp ../package.json ref/package.json && cp -r ../dist ref/dist && cp -r ../pluginTypes ref/pluginTypes && cp -r ../pluginTypes ref/types",
+        "build": "npm run cp:libs && rm -rf dist && npx @ijstech/compiler",
+        "test": "npm run build && npx @ijstech/cli serve 8079",
+        "serve": "npm run build && npm run serve"
+    }
+}
