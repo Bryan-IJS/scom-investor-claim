@@ -1,10 +1,9 @@
 import { INetwork, Wallet } from '@ijstech/eth-wallet';
-import { IExtendedNetwork } from '../global/index';
-import getNetworkList from '@scom/scom-network-list'
+import getNetworkList from '@scom/scom-network-list';
 import { application } from '@ijstech/components';
 
 export const state = {
-  networkMap: {} as { [key: number]: IExtendedNetwork },
+  networkMap: {} as { [key: number]: INetwork },
   infuraId: '',
   rpcWalletId: ''
 }
@@ -17,7 +16,7 @@ export const getInfuraId = () => {
   return state.infuraId;
 }
 
-const setNetworkList = (networkList: IExtendedNetwork[], infuraId?: string) => {
+const setNetworkList = (networkList: INetwork[], infuraId?: string) => {
   const wallet = Wallet.getClientInstance();
   state.networkMap = {};
   const defaultNetworkList = getNetworkList();

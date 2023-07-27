@@ -24,13 +24,13 @@ import {
 	getLatestInvestorClaimTokenInfo,
 	investorClaimToken
 } from './claim-utils/index';
-import { Alert } from './alert/index';
 import { claimComponent, claimDappContainer } from './index.css';
 import { tokenStore } from '@scom/scom-token-list';
 import ScomDappContainer from '@scom/scom-dapp-container';
 import ScomWalletModal, { IWalletPlugin } from '@scom/scom-wallet-modal';
 import configData from './data.json';
 import formSchema from './formSchema.json';
+import ScomTxStatusModal from '@scom/scom-tx-status-modal';
 
 const Theme = Styles.Theme.ThemeVars;
 
@@ -66,10 +66,9 @@ export default class ScomInvertorClaim extends Module {
 	private $eventBus: IEventBus;
 	private loadingElm: Panel;
 	private campaign?: ICampaignInfo;
-	private claimComponent: Panel;
 	private pnlClaimInfo: Panel;
 	private pnlEmpty: Panel;
-	private claimAlert: Alert;
+	private txStatusModal: ScomTxStatusModal;
 	private listTimer: any = [];
 	private dappContainer: ScomDappContainer;
 	private mdWallet: ScomWalletModal;
@@ -345,15 +344,15 @@ export default class ScomInvertorClaim extends Module {
 	}
 
 	private showMessage = (status: 'warning' | 'success' | 'error', content?: string | Error) => {
-		if (!this.claimAlert) return;
+		if (!this.txStatusModal) return;
 		let params: any = { status };
 		if (status === 'success') {
 			params.txtHash = content;
 		} else {
 			params.content = content;
 		}
-		this.claimAlert.message = { ...params };
-		this.claimAlert.showModal();
+		this.txStatusModal.message = { ...params };
+		this.txStatusModal.showModal();
 	}
 
 	private onClaim = async (btnClaim: Button, data: ICampaignInfo) => {
@@ -523,8 +522,6 @@ export default class ScomInvertorClaim extends Module {
 	async init() {
 		this.isReadyCallbackQueued = true;
 		super.init();
-		this.claimAlert = new Alert();
-		this.claimComponent.appendChild(this.claimAlert);
 		const lazyLoad = this.getAttribute('lazyLoad', true, false);
 		if (!lazyLoad) {
 			const campaigns = this.getAttribute('campaigns', true, []);
@@ -551,7 +548,7 @@ export default class ScomInvertorClaim extends Module {
 	render() {
 		return (
 			<i-scom-dapp-container id="dappContainer" class={claimDappContainer}>
-				<i-panel id="claimComponent" class={claimComponent} minHeight={295}>
+				<i-panel class={claimComponent} minHeight={295}>
 					<i-panel class="claim-layout" height="100%" margin={{ left: 'auto', right: 'auto' }}>
 						<i-vstack id="loadingElm" class="i-loading-overlay">
 							<i-vstack class="i-loading-spinner" horizontalAlignment="center" verticalAlignment="center">
@@ -564,6 +561,7 @@ export default class ScomInvertorClaim extends Module {
 							<i-panel id="pnlEmpty" />
 						</i-panel>
 					</i-panel>
+					<i-scom-tx-status-modal id="txStatusModal" />
 					<i-scom-wallet-modal id="mdWallet" wallets={[]} />
 				</i-panel>
 			</i-scom-dapp-container>

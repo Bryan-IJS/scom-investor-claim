@@ -15,8 +15,6 @@
     "@scom/scom-investor-claim": "*",
     "@ijstech/eth-contract": "*",
     "@ijstech/eth-wallet": "*",
-    "@scom/scom-commission-fee-setup": "*",
-    "@scom/scom-network-picker": "*",
     "@scom/scom-dapp-container": "*",
     "@scom/scom-wallet-modal": "*",
     "@scom/scom-token-list": "*"

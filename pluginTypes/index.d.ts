@@ -11,16 +11,8 @@ declare module "@scom/scom-investor-claim/assets.ts" {
 }
 /// <amd-module name="@scom/scom-investor-claim/global/utils/helper.ts" />
 declare module "@scom/scom-investor-claim/global/utils/helper.ts" {
-    export const explorerTxUrlsByChainId: {
-        [key: number]: string;
-    };
     export const formatNumber: (value: any, decimals?: number) => string;
     export const formatNumberWithSeparators: (value: number, precision?: number) => string;
-    export const viewOnExplorerByTxHash: (chainId: number, txHash: string) => void;
-}
-/// <amd-module name="@scom/scom-investor-claim/global/utils/error.ts" />
-declare module "@scom/scom-investor-claim/global/utils/error.ts" {
-    export function parseContractError(oMessage: string, tokens: string[]): Promise<string>;
 }
 /// <amd-module name="@scom/scom-investor-claim/global/utils/common.ts" />
 declare module "@scom/scom-investor-claim/global/utils/common.ts" {
@@ -61,25 +53,11 @@ declare module "@scom/scom-investor-claim/global/utils/interfaces.ts" {
 /// <amd-module name="@scom/scom-investor-claim/global/utils/index.ts" />
 declare module "@scom/scom-investor-claim/global/utils/index.ts" {
     export * from "@scom/scom-investor-claim/global/utils/helper.ts";
-    export { parseContractError } from "@scom/scom-investor-claim/global/utils/error.ts";
     export { registerSendTxEvents } from "@scom/scom-investor-claim/global/utils/common.ts";
     export * from "@scom/scom-investor-claim/global/utils/interfaces.ts";
 }
 /// <amd-module name="@scom/scom-investor-claim/global/index.ts" />
 declare module "@scom/scom-investor-claim/global/index.ts" {
-    import { INetwork } from '@ijstech/eth-wallet';
-    export interface IExtendedNetwork extends INetwork {
-        shortName?: string;
-        isDisabled?: boolean;
-        isMainChain?: boolean;
-        isCrossChainSupported?: boolean;
-        explorerName?: string;
-        explorerTxUrl?: string;
-        explorerAddressUrl?: string;
-        isTestnet?: boolean;
-        symbol?: string;
-        env?: string;
-    }
     export const enum EventId {
         Paid = "Paid",
         chainChanged = "chainChanged"
@@ -88,10 +66,10 @@ declare module "@scom/scom-investor-claim/global/index.ts" {
 }
 /// <amd-module name="@scom/scom-investor-claim/store/utils.ts" />
 declare module "@scom/scom-investor-claim/store/utils.ts" {
-    import { IExtendedNetwork } from "@scom/scom-investor-claim/global/index.ts";
+    import { INetwork } from '@ijstech/eth-wallet';
     export const state: {
         networkMap: {
-            [key: number]: IExtendedNetwork;
+            [key: number]: INetwork;
         };
         infuraId: string;
         rpcWalletId: string;
@@ -721,43 +699,6 @@ declare module "@scom/scom-investor-claim/claim-utils/index.ts" {
     const investorClaimToken: (contractAddress: string, id: number, callback?: (err: string | Error) => void) => Promise<import("@ijstech/eth-contract").TransactionReceipt>;
     export { getInvestorClaimInfo, getLatestInvestorClaimTokenInfo, investorClaimToken, };
 }
-/// <amd-module name="@scom/scom-investor-claim/alert/index.css.ts" />
-declare module "@scom/scom-investor-claim/alert/index.css.ts" {
-    const _default_4: string;
-    export default _default_4;
-}
-/// <amd-module name="@scom/scom-investor-claim/alert/index.tsx" />
-declare module "@scom/scom-investor-claim/alert/index.tsx" {
-    import { Module, ControlElement, Container } from '@ijstech/components';
-    global {
-        namespace JSX {
-            interface IntrinsicElements {
-                ['i-scom-claim-alert']: ControlElement;
-            }
-        }
-    }
-    export interface IMessage {
-        status: 'warning' | 'success' | 'error';
-        content?: any;
-        txtHash?: string;
-        obj?: any;
-    }
-    export class Alert extends Module {
-        private confirmModal;
-        private mainContent;
-        private _message;
-        get message(): IMessage;
-        set message(value: IMessage);
-        constructor(parent?: Container, options?: any);
-        init(): Promise<void>;
-        closeModal(): void;
-        showModal(): void;
-        private buildLink;
-        private renderUI;
-        private onErrMsgChanged;
-        render(): any;
-    }
-}
 /// <amd-module name="@scom/scom-investor-claim/index.css.ts" />
 declare module "@scom/scom-investor-claim/index.css.ts" {
     export const claimDappContainer: string;
@@ -765,27 +706,13 @@ declare module "@scom/scom-investor-claim/index.css.ts" {
 }
 /// <amd-module name="@scom/scom-investor-claim/data.json.ts" />
 declare module "@scom/scom-investor-claim/data.json.ts" {
-    const _default_5: {
+    const _default_4: {
         infuraId: string;
-        networks: ({
+        networks: {
             chainId: number;
-            isMainChain: boolean;
-            isCrossChainSupported: boolean;
-            explorerName: string;
             explorerTxUrl: string;
             explorerAddressUrl: string;
-            isTestnet: boolean;
-            shortName?: undefined;
-        } | {
-            chainId: number;
-            shortName: string;
-            isCrossChainSupported: boolean;
-            explorerName: string;
-            explorerTxUrl: string;
-            explorerAddressUrl: string;
-            isTestnet: boolean;
-            isMainChain?: undefined;
-        })[];
+        }[];
         defaultBuilderData: {
             defaultChainId: number;
             campaigns: ({
@@ -811,11 +738,11 @@ declare module "@scom/scom-investor-claim/data.json.ts" {
             }[];
         };
     };
-    export default _default_5;
+    export default _default_4;
 }
 /// <amd-module name="@scom/scom-investor-claim/formSchema.json.ts" />
 declare module "@scom/scom-investor-claim/formSchema.json.ts" {
-    const _default_6: {
+    const _default_5: {
         general: {
             dataSchema: {
                 type: string;
@@ -903,7 +830,7 @@ declare module "@scom/scom-investor-claim/formSchema.json.ts" {
             };
         };
     };
-    export default _default_6;
+    export default _default_5;
 }
 /// <amd-module name="@scom/scom-investor-claim" />
 declare module "@scom/scom-investor-claim" {
@@ -932,10 +859,9 @@ declare module "@scom/scom-investor-claim" {
         private $eventBus;
         private loadingElm;
         private campaign?;
-        private claimComponent;
         private pnlClaimInfo;
         private pnlEmpty;
-        private claimAlert;
+        private txStatusModal;
         private listTimer;
         private dappContainer;
         private mdWallet;
@@ -1183,7 +1109,6 @@ declare module "@scom/scom-investor-claim" {
         constructor(parent?: Container, options?: ScomInvestorClaimElement);
         onHide(): void;
         private registerEvent;
-        private onChainChanged;
         private refreshUI;
         private initializeWidgetConfig;
         private showMessage;

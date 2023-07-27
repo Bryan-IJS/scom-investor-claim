@@ -3,21 +3,13 @@ export default {
   networks: [  
     {
       chainId: 97,
-      isMainChain: true,
-      isCrossChainSupported: true,
-      explorerName: 'BSCScan',
       explorerTxUrl: 'https://testnet.bscscan.com/tx/',
-      explorerAddressUrl: 'https://testnet.bscscan.com/address/',
-      isTestnet: true
+      explorerAddressUrl: 'https://testnet.bscscan.com/address/'
     },    
     {
       chainId: 43113,
-      shortName: 'AVAX Testnet',
-      isCrossChainSupported: true,
-      explorerName: 'SnowTrace',
       explorerTxUrl: 'https://testnet.snowtrace.io/tx/',
-      explorerAddressUrl: 'https://testnet.snowtrace.io/address/',
-      isTestnet: true
+      explorerAddressUrl: 'https://testnet.snowtrace.io/address/'
     }    
   ],
   defaultBuilderData: {

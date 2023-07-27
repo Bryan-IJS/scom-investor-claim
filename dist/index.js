@@ -34,22 +34,7 @@ define("@scom/scom-investor-claim/assets.ts", ["require", "exports", "@ijstech/c
 define("@scom/scom-investor-claim/global/utils/helper.ts", ["require", "exports", "@ijstech/eth-wallet"], function (require, exports, eth_wallet_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.viewOnExplorerByTxHash = exports.formatNumberWithSeparators = exports.formatNumber = exports.explorerTxUrlsByChainId = void 0;
-    exports.explorerTxUrlsByChainId = {
-        1: 'https://etherscan.io/tx/',
-        4: 'https://rinkeby.etherscan.io/tx/',
-        42: 'https://kovan.etherscan.io/tx/',
-        56: 'https://bscscan.com/tx/',
-        97: 'https://testnet.bscscan.com/tx/',
-        43113: 'https://testnet.snowtrace.io/tx/',
-        43114: 'https://snowtrace.io/tx/',
-        137: 'https://polygonscan.com/tx/',
-        80001: 'https://mumbai.polygonscan.com/tx/',
-        250: 'https://ftmscan.com/tx/',
-        4002: 'https://testnet.ftmscan.com/tx/',
-        13370: 'https://aminoxtestnet.blockscout.alphacarbon.network/tx/',
-        421613: 'https://goerli.arbiscan.io/tx/'
-    };
+    exports.formatNumberWithSeparators = exports.formatNumber = void 0;
     const formatNumber = (value, decimals) => {
         let val = value;
         const minValue = '0.0000001';
@@ -86,48 +71,6 @@ define("@scom/scom-investor-claim/global/utils/helper.ts", ["require", "exports"
         return value.toLocaleString('en-US');
     };
     exports.formatNumberWithSeparators = formatNumberWithSeparators;
-    const viewOnExplorerByTxHash = (chainId, txHash) => {
-        if (exports.explorerTxUrlsByChainId[chainId]) {
-            let url = `${exports.explorerTxUrlsByChainId[chainId]}${txHash}`;
-            window.open(url);
-        }
-    };
-    exports.viewOnExplorerByTxHash = viewOnExplorerByTxHash;
-});
-define("@scom/scom-investor-claim/global/utils/error.ts", ["require", "exports"], function (require, exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.parseContractError = void 0;
-    ///<amd-module name='@scom/scom-investor-claim/global/utils/error.ts'/> 
-    async function parseContractError(oMessage, tokens) {
-        var _a;
-        const staticMessageMap = {
-            'execution reverted: OAXDEX: K': 'x * y = k Violated',
-            'execution reverted: OAXDEX: FORBIDDEN': 'Forbidden',
-            'execution reverted: OAXDEX: INSUFFICIENT_INPUT_AMOUNT': 'Insufficient input amount',
-            'execution reverted: OAXDEX: INVALID_TO': 'Invalid to',
-            'execution reverted: OAXDEX: INSUFFICIENT_LIQUIDITY': 'Insufficient liquidity',
-            'execution reverted: OAXDEX: INSUFFICIENT_OUTPUT_AMOUNT': 'Insufficient output amount',
-            'execution reverted: OAXDEX: PAIR PAUSED': 'Pair paused',
-            'execution reverted: OAXDEX: GLOBALLY PAUSED': 'Globally paused',
-            'execution reverted: OAXDEX: INSUFFICIENT_LIQUIDITY_BURNED': 'Insufficient liquidity burned',
-            'execution reverted: OAXDEX: INSUFFICIENT_LIQUIDITY_MINTED': 'Insufficient liquidity minted',
-            'execution reverted: OAXDEX: OVERFLOW': 'Overflow',
-            'execution reverted: OAXDEX_Pair: INSUFFICIENT_LIQUIDITY': 'Insufficient liquidity',
-            'execution reverted: OAXDEX_Pair: INSUFFICIENT_OUTPUT_AMOUNT': 'Insufficient output amount',
-            'execution reverted: OAXDEX_Pair: INSUFFICIENT_INPUT_AMOUNT': 'Insufficient input amount',
-            'execution reverted: OAXDEX: LOCKED': 'Locked',
-            'execution reverted: OAXDEX: INVALID_SIGNATURE': 'Invalid signature',
-            'execution reverted: OAXDEX: EXPIRED': 'Expired',
-            'Returned error: MetaMask Tx Signature: User denied transaction signature.': 'User denied transaction signature',
-            'execution reverted: OracleAdaptor: Price outside allowed range': 'Circuit Breaker: Exceeds Price Protection Range',
-            'execution reverted: PAIR_NOT_MATCH': 'Pair Not Match',
-            'execution reverted: No oracle found': 'No Oracle found',
-            'execution reverted: Amount exceeds available fund': 'Insufficient liquidity',
-        };
-        return (_a = staticMessageMap[oMessage]) !== null && _a !== void 0 ? _a : oMessage;
-    }
-    exports.parseContractError = parseContractError;
 });
 define("@scom/scom-investor-claim/global/utils/common.ts", ["require", "exports", "@ijstech/eth-wallet"], function (require, exports, eth_wallet_2) {
     "use strict";
@@ -154,20 +97,18 @@ define("@scom/scom-investor-claim/global/utils/interfaces.ts", ["require", "expo
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
 });
-define("@scom/scom-investor-claim/global/utils/index.ts", ["require", "exports", "@scom/scom-investor-claim/global/utils/helper.ts", "@scom/scom-investor-claim/global/utils/error.ts", "@scom/scom-investor-claim/global/utils/common.ts", "@scom/scom-investor-claim/global/utils/interfaces.ts"], function (require, exports, helper_1, error_1, common_1, interfaces_1) {
+define("@scom/scom-investor-claim/global/utils/index.ts", ["require", "exports", "@scom/scom-investor-claim/global/utils/helper.ts", "@scom/scom-investor-claim/global/utils/common.ts", "@scom/scom-investor-claim/global/utils/interfaces.ts"], function (require, exports, helper_1, common_1, interfaces_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.registerSendTxEvents = exports.parseContractError = void 0;
+    exports.registerSendTxEvents = void 0;
     ///<amd-module name='@scom/scom-investor-claim/global/utils/index.ts'/> 
     __exportStar(helper_1, exports);
-    Object.defineProperty(exports, "parseContractError", { enumerable: true, get: function () { return error_1.parseContractError; } });
     Object.defineProperty(exports, "registerSendTxEvents", { enumerable: true, get: function () { return common_1.registerSendTxEvents; } });
     __exportStar(interfaces_1, exports);
 });
 define("@scom/scom-investor-claim/global/index.ts", ["require", "exports", "@scom/scom-investor-claim/global/utils/index.ts"], function (require, exports, index_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    ;
     __exportStar(index_1, exports);
 });
 define("@scom/scom-investor-claim/store/utils.ts", ["require", "exports", "@ijstech/eth-wallet", "@scom/scom-network-list", "@ijstech/components"], function (require, exports, eth_wallet_3, scom_network_list_1, components_2) {
@@ -1168,257 +1109,30 @@ define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", 
     };
     exports.investorClaimToken = investorClaimToken;
 });
-define("@scom/scom-investor-claim/alert/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    const Theme = components_3.Styles.Theme.ThemeVars;
-    exports.default = components_3.Styles.style({
-        textAlign: 'center',
-        $nest: {
-            'i-label > *': {
-                fontSize: '.875rem'
-            },
-            '.modal': {
-                minWidth: '25%',
-                maxWidth: '100%',
-                width: 455,
-                background: Theme.background.modal,
-                borderRadius: 12
-            },
-            '.i-modal-close svg': {
-                fill: '#F05E61'
-            },
-            '.i-modal_content': {
-                padding: '0 2.563rem 1.5rem'
-            },
-            '.i-modal_header': {
-                borderBottom: 'none !important'
-            },
-            '.waiting-txt > *': {
-                color: '#F6C958',
-                fontSize: '1.125rem'
-            },
-            '.confirm-txt > *': {
-                color: '#C2C3CB'
-            },
-            '.red-link *': {
-                color: '#FD4A4C',
-                textDecoration: 'none'
-            },
-            '.mb-1': {
-                marginBottom: '1rem'
-            },
-            'i-button': {
-                padding: '1rem 2rem',
-                textAlign: 'center'
-            },
-            '.btn-os': {
-                background: 'transparent linear-gradient(90deg, #AC1D78 0%, #E04862 100%) 0% 0% no-repeat padding-box',
-                fontFamily: 'Raleway Bold',
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                color: '#fff'
-                // color: Theme.colors.primary.contrastText
-            }
-        }
-    });
-});
-define("@scom/scom-investor-claim/alert/index.tsx", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/alert/index.css.ts", "@scom/scom-investor-claim/assets.ts"], function (require, exports, components_4, eth_wallet_5, index_4, index_css_1, assets_2) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: true });
-    exports.Alert = void 0;
-    const Theme = components_4.Styles.Theme.ThemeVars;
-    ;
-    let Alert = class Alert extends components_4.Module {
-        get message() {
-            return this._message;
-        }
-        set message(value) {
-            this._message = value;
-            this.renderUI();
-        }
-        constructor(parent, options) {
-            super(parent, options);
-        }
-        ;
-        async init() {
-            this.classList.add(index_css_1.default);
-            super.init();
-        }
-        closeModal() {
-            this.confirmModal.visible = false;
-        }
-        showModal() {
-            this.confirmModal.visible = true;
-        }
-        async buildLink() {
-            if (this.message.txtHash) {
-                const chainId = await eth_wallet_5.Wallet.getClientInstance().getChainId();
-                (0, index_4.viewOnExplorerByTxHash)(chainId, this.message.txtHash);
-            }
-        }
-        async renderUI() {
-            this.mainContent.innerHTML = '';
-            const mainSection = await components_4.VStack.create({
-                horizontalAlignment: 'center'
-            });
-            if (this.message.status === 'warning') {
-                mainSection.id = 'warningSection';
-                const loading = (this.$render("i-panel", { height: 100 },
-                    this.$render("i-vstack", { id: "loadingElm", class: "i-loading-overlay", height: "100%", background: { color: "transparent" } },
-                        this.$render("i-vstack", { class: "i-loading-spinner", horizontalAlignment: "center", verticalAlignment: "center" },
-                            this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_2.default.fullPath('img/loading.svg'), width: 24, height: 24 } }),
-                            this.$render("i-label", { caption: "Loading...", font: { color: '#FD4A4C' }, class: "i-loading-spinner_text" })))));
-                mainSection.appendChild(loading);
-                const section = new components_4.VStack();
-                section.margin = { bottom: 20 };
-                const captionList = ['Waiting For Confirmation', this.message.content || '', 'Confirm this transaction in your wallet'];
-                const classList = ['waiting-txt mb-1', 'mb-1', 'confirm-txt'];
-                for (let i = 0; i < captionList.length; i++) {
-                    const caption = captionList[i];
-                    const label = await components_4.Label.create();
-                    label.caption = caption;
-                    if (classList[i]) {
-                        const classes = classList[i].split(' ');
-                        classes.forEach(className => label.classList.add(className));
-                    }
-                    section.appendChild(label);
-                }
-                ;
-                mainSection.appendChild(section);
-            }
-            else if (this.message.status === 'success') {
-                const image = await components_4.Image.create({
-                    width: '50px',
-                    url: assets_2.default.fullPath('img/success-icon.svg'),
-                    display: 'inline-block',
-                    margin: { bottom: 16 }
-                });
-                mainSection.appendChild(image);
-                const label = await components_4.Label.create();
-                label.caption = 'Transaction Submitted';
-                label.classList.add("waiting-txt");
-                mainSection.appendChild(label);
-                const contentSection = await components_4.Panel.create();
-                contentSection.id = 'contentSection';
-                mainSection.appendChild(contentSection);
-                const contentLabel = await components_4.Label.create({
-                    wordBreak: 'break-all'
-                });
-                contentLabel.caption = this.message.content || '';
-                contentSection.appendChild(contentLabel);
-                if (this.message.txtHash) {
-                    const section = new components_4.VStack();
-                    const label1 = await components_4.Label.create({
-                        caption: this.message.txtHash.substr(0, 33),
-                        margin: { bottom: 4 }
-                    });
-                    section.appendChild(label1);
-                    const label2 = await components_4.Label.create({
-                        caption: this.message.txtHash.substr(33, this.message.txtHash.length),
-                        margin: { bottom: 16 }
-                    });
-                    section.appendChild(label2);
-                    const link = await components_4.Label.create({
-                        caption: 'View on block explorer',
-                        display: 'block'
-                    });
-                    link.onClick = this.buildLink.bind(this);
-                    link.classList.add("red-link", "block", "pointer");
-                    section.appendChild(link);
-                    contentSection.appendChild(section);
-                }
-                const button = new components_4.Button(mainSection, {
-                    width: '100%',
-                    caption: 'Close',
-                    // font: { color: Theme.colors.primary.contrastText }
-                    font: { color: '#fff' },
-                    margin: { top: 16 }
-                });
-                button.classList.add('btn-os');
-                button.onClick = () => this.closeModal();
-                mainSection.appendChild(button);
-            }
-            else {
-                const image = await components_4.Image.create({
-                    width: '50px',
-                    url: assets_2.default.fullPath('img/oswap_error.png'),
-                    display: 'inline-block',
-                    margin: { bottom: 16 }
-                });
-                mainSection.appendChild(image);
-                const label = await components_4.Label.create({
-                    caption: 'Transaction Rejected.',
-                    margin: { bottom: 16 }
-                });
-                label.classList.add('waiting-txt');
-                mainSection.appendChild(label);
-                const section = await components_4.VStack.create();
-                section.id = 'contentSection';
-                const contentLabel = await components_4.Label.create({
-                    caption: await this.onErrMsgChanged(),
-                    margin: { bottom: 16 },
-                    wordBreak: 'break-word'
-                });
-                section.appendChild(contentLabel);
-                mainSection.appendChild(section);
-                const button = new components_4.Button(mainSection, {
-                    width: '100%',
-                    caption: 'Cancel',
-                    // font: { color: Theme.colors.primary.contrastText }
-                    font: { color: '#fff' },
-                    margin: { top: 16 }
-                });
-                button.classList.add('btn-os');
-                button.onClick = () => this.closeModal();
-                mainSection.appendChild(button);
-            }
-            this.mainContent.clearInnerHTML();
-            this.mainContent.appendChild(mainSection);
-        }
-        async onErrMsgChanged() {
-            if (this.message.status !== 'error')
-                return this.message.content;
-            if (this.message.content.message && this.message.content.message.includes('Internal JSON-RPC error.')) {
-                this.message.content.message = JSON.parse(this.message.content.message.replace('Internal JSON-RPC error.\n', '')).message;
-            }
-            return await (0, index_4.parseContractError)(this.message.content.message, this.message.obj);
-        }
-        render() {
-            return (this.$render("i-modal", { id: "confirmModal", closeIcon: { name: 'times' }, class: "confirm-modal", minHeight: "280px" },
-                this.$render("i-panel", { id: "mainContent", class: "i-modal_content" })));
-        }
-    };
-    Alert = __decorate([
-        (0, components_4.customElements)('i-scom-claim-alert')
-    ], Alert);
-    exports.Alert = Alert;
-    ;
-});
-define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstech/components", "@scom/scom-investor-claim/assets.ts"], function (require, exports, components_5, assets_3) {
+define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstech/components", "@scom/scom-investor-claim/assets.ts"], function (require, exports, components_3, assets_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.claimComponent = exports.claimDappContainer = void 0;
-    const Theme = components_5.Styles.Theme.ThemeVars;
+    const Theme = components_3.Styles.Theme.ThemeVars;
     const colorVar = {
         primaryButton: 'transparent linear-gradient(90deg, #AC1D78 0%, #E04862 100%) 0% 0% no-repeat padding-box',
         primaryGradient: 'linear-gradient(255deg,#f15e61,#b52082)',
         darkBg: '#181E3E 0% 0% no-repeat padding-box',
         primaryDisabled: 'transparent linear-gradient(270deg,#351f52,#552a42) 0% 0% no-repeat padding-box !important'
     };
-    components_5.Styles.fontFace({
+    components_3.Styles.fontFace({
         fontFamily: "Montserrat Regular",
-        src: `url("${assets_3.default.fullPath('fonts/montserrat/Montserrat-Regular.ttf')}") format("truetype")`,
+        src: `url("${assets_2.default.fullPath('fonts/montserrat/Montserrat-Regular.ttf')}") format("truetype")`,
         fontWeight: 'nomal',
         fontStyle: 'normal'
     });
-    components_5.Styles.fontFace({
+    components_3.Styles.fontFace({
         fontFamily: "Raleway Bold",
-        src: `url("${assets_3.default.fullPath('fonts/raleway/Raleway-Bold.ttf')}") format("truetype")`,
+        src: `url("${assets_2.default.fullPath('fonts/raleway/Raleway-Bold.ttf')}") format("truetype")`,
         fontWeight: 'bold',
         fontStyle: 'normal'
     });
-    exports.claimDappContainer = components_5.Styles.style({
+    exports.claimDappContainer = components_3.Styles.style({
         $nest: {
             'dapp-container-body': {
                 $nest: {
@@ -1440,7 +1154,7 @@ define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstec
             }
         }
     });
-    exports.claimComponent = components_5.Styles.style({
+    exports.claimComponent = components_3.Styles.style({
         $nest: {
             'i-label': {
                 fontFamily: 'Montserrat Regular',
@@ -1550,21 +1264,13 @@ define("@scom/scom-investor-claim/data.json.ts", ["require", "exports"], functio
         networks: [
             {
                 chainId: 97,
-                isMainChain: true,
-                isCrossChainSupported: true,
-                explorerName: 'BSCScan',
                 explorerTxUrl: 'https://testnet.bscscan.com/tx/',
-                explorerAddressUrl: 'https://testnet.bscscan.com/address/',
-                isTestnet: true
+                explorerAddressUrl: 'https://testnet.bscscan.com/address/'
             },
             {
                 chainId: 43113,
-                shortName: 'AVAX Testnet',
-                isCrossChainSupported: true,
-                explorerName: 'SnowTrace',
                 explorerTxUrl: 'https://testnet.snowtrace.io/tx/',
-                explorerAddressUrl: 'https://testnet.snowtrace.io/address/',
-                isTestnet: true
+                explorerAddressUrl: 'https://testnet.snowtrace.io/address/'
             }
         ],
         defaultBuilderData: {
@@ -1690,11 +1396,11 @@ define("@scom/scom-investor-claim/formSchema.json.ts", ["require", "exports"], f
         }
     };
 });
-define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/alert/index.tsx", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.json.ts"], function (require, exports, components_6, eth_wallet_6, assets_4, index_5, index_6, index_7, index_8, index_css_2, scom_token_list_1, data_json_1, formSchema_json_1) {
+define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.json.ts"], function (require, exports, components_4, eth_wallet_5, assets_3, index_4, index_5, index_6, index_css_1, scom_token_list_1, data_json_1, formSchema_json_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    const Theme = components_6.Styles.Theme.ThemeVars;
-    let ScomInvertorClaim = class ScomInvertorClaim extends components_6.Module {
+    const Theme = components_4.Styles.Theme.ThemeVars;
+    let ScomInvertorClaim = class ScomInvertorClaim extends components_4.Module {
         _getActions(category) {
             const actions = [
                 {
@@ -1815,9 +1521,9 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
         async setData(value) {
             var _a;
             this._data = value;
-            const rpcWalletId = (0, index_6.initRpcWallet)(this.defaultChainId);
-            const rpcWallet = (0, index_6.getRpcWallet)();
-            const event = rpcWallet.registerWalletEvent(this, eth_wallet_6.Constants.RpcWalletEvent.Connected, async (connected) => {
+            const rpcWalletId = (0, index_5.initRpcWallet)(this.defaultChainId);
+            const rpcWallet = (0, index_5.getRpcWallet)();
+            const event = rpcWallet.registerWalletEvent(this, eth_wallet_5.Constants.RpcWalletEvent.Connected, async (connected) => {
                 await this.initializeWidgetConfig();
             });
             this.rpcWalletEvents.push(event);
@@ -1903,7 +1609,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
         }
         get campaignInfo() {
             var _a;
-            const chainId = (0, index_6.getChainId)();
+            const chainId = (0, index_5.getChainId)();
             return (_a = this._data.campaigns) === null || _a === void 0 ? void 0 : _a.find(v => v.chainId === chainId && v.dripAddress);
         }
         constructor(parent, options) {
@@ -1921,10 +1627,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
             this.clientEvents = [];
             this.symbol = 'OSWAP'; // TODO - Change this by the token address that is taken from the API
             this.registerEvent = () => {
-                this.clientEvents.push(this.$eventBus.register(this, "chainChanged" /* EventId.chainChanged */, this.onChainChanged));
-            };
-            this.onChainChanged = async () => {
-                this.initializeWidgetConfig();
+                this.clientEvents.push(this.$eventBus.register(this, "chainChanged" /* EventId.chainChanged */, this.initializeWidgetConfig));
             };
             this.refreshUI = () => {
                 this.initializeWidgetConfig();
@@ -1934,25 +1637,25 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     if (!hideLoading && this.loadingElm) {
                         this.loadingElm.visible = true;
                     }
-                    if (!(0, index_6.isClientWalletConnected)() || !this._data || !this.checkValidation()) {
+                    if (!(0, index_5.isClientWalletConnected)() || !this.checkValidation()) {
                         await this.renderEmpty();
                         return;
                     }
-                    scom_token_list_1.tokenStore.updateTokenMapData((0, index_6.getChainId)());
-                    const rpcWallet = (0, index_6.getRpcWallet)();
+                    scom_token_list_1.tokenStore.updateTokenMapData((0, index_5.getChainId)());
+                    const rpcWallet = (0, index_5.getRpcWallet)();
                     if (rpcWallet.address) {
                         scom_token_list_1.tokenStore.updateAllTokenBalances(rpcWallet);
                     }
-                    await eth_wallet_6.Wallet.getClientInstance().init();
-                    this.campaign = await (0, index_7.getInvestorClaimInfo)(this.campaignInfo);
-                    await this.renderCampaign(hideLoading);
+                    await eth_wallet_5.Wallet.getClientInstance().init();
+                    this.campaign = await (0, index_6.getInvestorClaimInfo)(this.campaignInfo);
+                    await this.renderCampaign();
                     if (!hideLoading && this.loadingElm) {
                         this.loadingElm.visible = false;
                     }
                 });
             };
             this.showMessage = (status, content) => {
-                if (!this.claimAlert)
+                if (!this.txStatusModal)
                     return;
                 let params = { status };
                 if (status === 'success') {
@@ -1961,17 +1664,17 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 else {
                     params.content = content;
                 }
-                this.claimAlert.message = Object.assign({}, params);
-                this.claimAlert.showModal();
+                this.txStatusModal.message = Object.assign({}, params);
+                this.txStatusModal.showModal();
             };
             this.onClaim = async (btnClaim, data) => {
-                if (!(0, index_6.isClientWalletConnected)() || !(0, index_6.isRpcWalletConnected)()) {
+                if (!(0, index_5.isClientWalletConnected)() || !(0, index_5.isRpcWalletConnected)()) {
                     this.connectWallet();
                     return;
                 }
                 if (!data)
                     return;
-                this.showMessage('warning', `Claiming ${(0, index_5.formatNumber)(data.claimable)} ${this.symbol}`);
+                this.showMessage('warning', `Claiming ${(0, index_4.formatNumber)(data.claimable)} ${this.symbol}`);
                 const callBack = async (err, reply) => {
                     if (err) {
                         this.showMessage('error', err);
@@ -1987,15 +1690,15 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     btnClaim.rightIcon.visible = false;
                     btnClaim.enabled = true;
                 };
-                (0, index_5.registerSendTxEvents)({
+                (0, index_4.registerSendTxEvents)({
                     transactionHash: callBack,
                     confirmation: confirmationCallBack
                 });
-                (0, index_7.investorClaimToken)(data.dripAddress, data.lockId, callBack);
+                (0, index_6.investorClaimToken)(data.dripAddress, data.lockId, callBack);
             };
             this.checkValidation = () => {
-                var _a;
-                if (!((_a = this._data.campaigns) === null || _a === void 0 ? void 0 : _a.length))
+                var _a, _b;
+                if (!((_b = (_a = this._data) === null || _a === void 0 ? void 0 : _a.campaigns) === null || _b === void 0 ? void 0 : _b.length))
                     return false;
                 return this._data.campaigns.every(v => v.chainId && v.dripAddress);
             };
@@ -2006,27 +1709,27 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.listTimer = [];
             };
             this.connectWallet = async () => {
-                if (!(0, index_6.isClientWalletConnected)()) {
+                if (!(0, index_5.isClientWalletConnected)()) {
                     if (this.mdWallet) {
-                        await components_6.application.loadPackage('@scom/scom-wallet-modal', '*');
+                        await components_4.application.loadPackage('@scom/scom-wallet-modal', '*');
                         this.mdWallet.networks = this.networks;
                         this.mdWallet.wallets = this.wallets;
                         this.mdWallet.showModal();
                     }
                     return;
                 }
-                if (!(0, index_6.isRpcWalletConnected)()) {
-                    const chainId = (0, index_6.getChainId)();
-                    const clientWallet = eth_wallet_6.Wallet.getClientInstance();
+                if (!(0, index_5.isRpcWalletConnected)()) {
+                    const chainId = (0, index_5.getChainId)();
+                    const clientWallet = eth_wallet_5.Wallet.getClientInstance();
                     await clientWallet.switchNetwork(chainId);
                 }
             };
             this.initEmptyUI = async () => {
-                const isClientConnected = (0, index_6.isClientWalletConnected)();
+                const isClientConnected = (0, index_5.isClientWalletConnected)();
                 this.pnlEmpty.clearInnerHTML();
                 this.pnlEmpty.appendChild(this.$render("i-panel", { class: "no-campaign", height: "100%", background: { color: Theme.background.main } },
                     this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
-                        this.$render("i-image", { url: assets_4.default.fullPath('img/claim/TrollTrooper.svg') }),
+                        this.$render("i-image", { url: assets_3.default.fullPath('img/claim/TrollTrooper.svg') }),
                         this.$render("i-label", { caption: isClientConnected ? 'No Campaigns' : 'Please connect with your wallet!' }))));
                 this.pnlEmpty.visible = true;
             };
@@ -2036,55 +1739,54 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     this.loadingElm.visible = false;
                 }
             };
-            this.renderCampaign = async (hideLoading) => {
+            this.renderCampaign = async () => {
                 await this.initEmptyUI();
                 this.pnlEmpty.visible = false;
+                this.removeTimer();
                 if (!this.campaign) {
                     this.pnlClaimInfo.visible = false;
                     this.pnlEmpty.visible = true;
-                    this.removeTimer();
                     return;
                 }
-                this.removeTimer();
                 let info = Object.assign({}, this.campaign);
                 const updateClaimTokenInfo = async () => {
                     var _a;
                     if (!((_a = this.campaign) === null || _a === void 0 ? void 0 : _a.lockId))
                         return;
-                    const latestInfo = await (0, index_7.getLatestInvestorClaimTokenInfo)(this.campaign.dripAddress, this.campaign.lockId);
+                    const latestInfo = await (0, index_6.getLatestInvestorClaimTokenInfo)(this.campaign.dripAddress, this.campaign.lockId);
                     info = Object.assign(Object.assign({}, latestInfo), info);
-                    lbLockedAmount.caption = `${(0, index_5.formatNumber)(info.lockedAmount)} ${this.symbol}`;
-                    lbClaimable.caption = `${(0, index_5.formatNumber)(info.claimable)} ${this.symbol}`;
-                    const isRpcConnected = (0, index_6.isRpcWalletConnected)();
-                    const isClientConnected = (0, index_6.isClientWalletConnected)();
+                    lbLockedAmount.caption = `${(0, index_4.formatNumber)(info.lockedAmount)} ${this.symbol}`;
+                    lbClaimable.caption = `${(0, index_4.formatNumber)(info.claimable)} ${this.symbol}`;
+                    const isRpcConnected = (0, index_5.isRpcWalletConnected)();
+                    const isClientConnected = (0, index_5.isClientWalletConnected)();
                     btnClaim.caption = !isClientConnected ? 'Connect Wallet' : !isRpcConnected ? 'Switch Network' : 'Claim';
                     btnClaim.enabled = !isClientConnected || !isRpcConnected || (btnClaim.enabled && parseFloat(info.claimable) > 0);
                 };
-                const lbLockedAmount = await components_6.Label.create({
-                    caption: `${(0, index_5.formatNumber)(this.campaign.lockedAmount)} ${this.symbol}`,
+                const lbLockedAmount = await components_4.Label.create({
+                    caption: `${(0, index_4.formatNumber)(this.campaign.lockedAmount)} ${this.symbol}`,
                     margin: { left: 'auto' }
                 });
-                const lbClaimable = await components_6.Label.create({
-                    caption: `${(0, index_5.formatNumber)(this.campaign.claimable)} ${this.symbol}`,
+                const lbClaimable = await components_4.Label.create({
+                    caption: `${(0, index_4.formatNumber)(this.campaign.claimable)} ${this.symbol}`,
                     margin: { left: 'auto' }
                 });
-                const btnClaim = await components_6.Button.create({
-                    caption: !(0, index_6.isClientWalletConnected)() ? 'Connect Wallet' : !(0, index_6.isRpcWalletConnected)() ? 'Switch Network' : 'Claim',
+                const btnClaim = await components_4.Button.create({
+                    caption: !(0, index_5.isClientWalletConnected)() ? 'Connect Wallet' : !(0, index_5.isRpcWalletConnected)() ? 'Switch Network' : 'Claim',
                     rightIcon: { spin: true, visible: false },
                     margin: { top: 8, left: 'auto', right: 'auto' }
                 });
                 btnClaim.classList.add('btn-os', 'btn-claim');
                 if (this.campaign.lockId) {
-                    this.listTimer.push(setInterval(updateClaimTokenInfo, 1000));
+                    this.listTimer.push(setInterval(updateClaimTokenInfo, 10000));
                 }
-                let vestingStart = this.campaign.vestingStart ? components_6.moment.unix(this.campaign.vestingStart).format('YYYY-MM-DD HH:mm:ss') : '';
-                let vestingEnd = this.campaign.vestingEnd ? components_6.moment.unix(this.campaign.vestingEnd).format('YYYY-MM-DD HH:mm:ss') : '';
-                btnClaim.enabled = !(0, index_6.isClientWalletConnected)() || !(0, index_6.isRpcWalletConnected)() || parseFloat(this.campaign.claimable) > 0;
+                let vestingStart = this.campaign.vestingStart ? components_4.moment.unix(this.campaign.vestingStart).format('YYYY-MM-DD HH:mm:ss') : '';
+                let vestingEnd = this.campaign.vestingEnd ? components_4.moment.unix(this.campaign.vestingEnd).format('YYYY-MM-DD HH:mm:ss') : '';
+                btnClaim.enabled = !(0, index_5.isClientWalletConnected)() || !(0, index_5.isRpcWalletConnected)() || parseFloat(this.campaign.claimable) > 0;
                 btnClaim.onClick = () => this.onClaim(btnClaim, info);
                 this.pnlClaimInfo.clearInnerHTML();
                 this.pnlClaimInfo.appendChild(this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
                     this.$render("i-vstack", { gap: 8, horizontalAlignment: "center" },
-                        this.$render("i-image", { width: 75, height: 75, url: assets_4.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_6.fallBackUrl }),
+                        this.$render("i-image", { width: 75, height: 75, url: assets_3.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_5.fallBackUrl }),
                         this.$render("i-label", { caption: this.campaign.campaignName, font: { size: '1.25rem', color: Theme.text.secondary, bold: true } }),
                         this.$render("i-label", { caption: this.campaign.campaignDesc })),
                     this.$render("i-panel", { width: "100%", height: 2, background: { color: Theme.input.background } }),
@@ -2105,13 +1807,13 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.pnlClaimInfo.visible = true;
             };
             if (data_json_1.default)
-                (0, index_6.setDataFromConfig)(data_json_1.default);
-            this.$eventBus = components_6.application.EventBus;
+                (0, index_5.setDataFromConfig)(data_json_1.default);
+            this.$eventBus = components_4.application.EventBus;
             this.registerEvent();
         }
         onHide() {
             this.dappContainer.onHide();
-            const rpcWallet = (0, index_6.getRpcWallet)();
+            const rpcWallet = (0, index_5.getRpcWallet)();
             for (let event of this.rpcWalletEvents) {
                 rpcWallet.unregisterWalletEvent(event);
             }
@@ -2124,8 +1826,6 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
         async init() {
             this.isReadyCallbackQueued = true;
             super.init();
-            this.claimAlert = new index_8.Alert();
-            this.claimComponent.appendChild(this.claimAlert);
             const lazyLoad = this.getAttribute('lazyLoad', true, false);
             if (!lazyLoad) {
                 const campaigns = this.getAttribute('campaigns', true, []);
@@ -2150,22 +1850,23 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
             this.executeReadyCallback();
         }
         render() {
-            return (this.$render("i-scom-dapp-container", { id: "dappContainer", class: index_css_2.claimDappContainer },
-                this.$render("i-panel", { id: "claimComponent", class: index_css_2.claimComponent, minHeight: 295 },
+            return (this.$render("i-scom-dapp-container", { id: "dappContainer", class: index_css_1.claimDappContainer },
+                this.$render("i-panel", { class: index_css_1.claimComponent, minHeight: 295 },
                     this.$render("i-panel", { class: "claim-layout", height: "100%", margin: { left: 'auto', right: 'auto' } },
                         this.$render("i-vstack", { id: "loadingElm", class: "i-loading-overlay" },
                             this.$render("i-vstack", { class: "i-loading-spinner", horizontalAlignment: "center", verticalAlignment: "center" },
-                                this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_4.default.fullPath('img/loading.svg'), width: 36, height: 36 } }),
+                                this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_3.default.fullPath('img/loading.svg'), width: 36, height: 36 } }),
                                 this.$render("i-label", { caption: "Loading...", font: { color: '#FD4A4C', size: '1.5em' }, class: "i-loading-spinner_text" }))),
                         this.$render("i-panel", { class: "claim-wapper" },
                             this.$render("i-hstack", { id: "pnlClaimInfo", horizontalAlignment: "center", padding: { top: 10, bottom: 10, left: 16, right: 16 } }),
                             this.$render("i-panel", { id: "pnlEmpty" }))),
+                    this.$render("i-scom-tx-status-modal", { id: "txStatusModal" }),
                     this.$render("i-scom-wallet-modal", { id: "mdWallet", wallets: [] }))));
         }
     };
     ScomInvertorClaim = __decorate([
-        components_6.customModule,
-        (0, components_6.customElements)('i-scom-investor-claim')
+        components_4.customModule,
+        (0, components_4.customElements)('i-scom-investor-claim')
     ], ScomInvertorClaim);
     exports.default = ScomInvertorClaim;
 });
