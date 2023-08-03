@@ -1,25 +1,23 @@
-import { BigNumber, Utils } from '@ijstech/eth-wallet';
+import { BigNumber, IWallet, Utils, Wallet } from '@ijstech/eth-wallet';
 import { Contracts as DripContracts } from '../contracts/oswap-drip-contract/index';
 import { ICampaign, ICampaignInfo, IClaimInfoOption } from '../global/index';
-import { getRpcWallet } from '../store/index';
 
-const getInvestorClaimInfo = async (campaign: ICampaign) => {
+const getInvestorClaimInfo = async (wallet: IWallet, campaign: ICampaign) => {
   if (!campaign) return undefined;
-  const extendedInfo = await getInvestorClaimExtendedInfo(campaign.dripAddress);
+  const extendedInfo = await getInvestorClaimExtendedInfo(wallet, campaign.dripAddress);
   return {
     ...campaign,
     ...extendedInfo
   } as ICampaignInfo
 }
 
-const getInvestorClaimExtendedInfo = async (dripAddress: string): Promise<IClaimInfoOption> => {
+const getInvestorClaimExtendedInfo = async (wallet: IWallet, dripAddress: string): Promise<IClaimInfoOption> => {
   const zeroAmounts = {
     claimable: '0',
     lockedAmount: '0'
   }
 
   try {
-    const wallet = getRpcWallet();
     const currentAddress = wallet.address;
     const drip = new DripContracts.Drip(wallet, dripAddress);
     const balance = await drip.balanceOf(currentAddress);
@@ -56,8 +54,7 @@ const getInvestorClaimExtendedInfo = async (dripAddress: string): Promise<IClaim
   }
 }
 
-const getLatestInvestorClaimTokenInfo = async (dripAddress: string, lockId: number) => {
-  let wallet = getRpcWallet();
+const getLatestInvestorClaimTokenInfo = async (wallet: IWallet, dripAddress: string, lockId: number) => {
   let drip = new DripContracts.Drip(wallet, dripAddress);
   let info = await drip.getInfo(lockId);
   let maxClaimedFundsInWei = await drip.maximumAllowedClaimedFunds(lockId);
@@ -76,7 +73,7 @@ const getLatestInvestorClaimTokenInfo = async (dripAddress: string, lockId: numb
 const investorClaimToken = async (contractAddress: string, id: number, callback?: (err: string | Error) => void) => {
   if (!contractAddress) return;
   try {
-    let wallet = getRpcWallet();
+    let wallet = Wallet.getClientInstance();
     let drip = new DripContracts.Drip(wallet, contractAddress);
     let receipt = await drip.claim(id);
     return receipt;

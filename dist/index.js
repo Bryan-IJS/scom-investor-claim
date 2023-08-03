@@ -109,97 +109,87 @@ define("@scom/scom-investor-claim/global/utils/index.ts", ["require", "exports",
 define("@scom/scom-investor-claim/global/index.ts", ["require", "exports", "@scom/scom-investor-claim/global/utils/index.ts"], function (require, exports, index_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    ///<amd-module name='@scom/scom-investor-claim/global/index.ts'/> 
     __exportStar(index_1, exports);
 });
 define("@scom/scom-investor-claim/store/utils.ts", ["require", "exports", "@ijstech/eth-wallet", "@scom/scom-network-list", "@ijstech/components"], function (require, exports, eth_wallet_3, scom_network_list_1, components_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    exports.getClientWallet = exports.getRpcWallet = exports.initRpcWallet = exports.getChainId = exports.isRpcWalletConnected = exports.isClientWalletConnected = exports.setDataFromConfig = exports.getInfuraId = exports.state = void 0;
-    exports.state = {
-        networkMap: {},
-        infuraId: '',
-        rpcWalletId: ''
-    };
-    const setInfuraId = (infuraId) => {
-        exports.state.infuraId = infuraId;
-    };
-    const getInfuraId = () => {
-        return exports.state.infuraId;
-    };
-    exports.getInfuraId = getInfuraId;
-    const setNetworkList = (networkList, infuraId) => {
-        const wallet = eth_wallet_3.Wallet.getClientInstance();
-        exports.state.networkMap = {};
-        const defaultNetworkList = (0, scom_network_list_1.default)();
-        const defaultNetworkMap = defaultNetworkList.reduce((acc, cur) => {
-            acc[cur.chainId] = cur;
-            return acc;
-        }, {});
-        for (let network of networkList) {
-            const networkInfo = defaultNetworkMap[network.chainId];
-            if (!networkInfo)
-                continue;
-            if (infuraId && network.rpcUrls && network.rpcUrls.length > 0) {
-                for (let i = 0; i < network.rpcUrls.length; i++) {
-                    network.rpcUrls[i] = network.rpcUrls[i].replace(/{InfuraId}/g, infuraId);
-                }
+    exports.isClientWalletConnected = exports.State = void 0;
+    class State {
+        constructor(options) {
+            this.networkMap = {};
+            this.infuraId = '';
+            this.rpcWalletId = '';
+            this.initData(options);
+        }
+        initData(options) {
+            if (options.infuraId) {
+                this.infuraId = options.infuraId;
             }
-            exports.state.networkMap[network.chainId] = Object.assign(Object.assign({}, networkInfo), network);
-            wallet.setNetworkInfo(exports.state.networkMap[network.chainId]);
+            if (options.networks) {
+                this.setNetworkList(options.networks, options.infuraId);
+            }
         }
-    };
-    const setDataFromConfig = (options) => {
-        if (options.infuraId) {
-            setInfuraId(options.infuraId);
+        initRpcWallet(defaultChainId) {
+            var _a, _b, _c;
+            if (this.rpcWalletId) {
+                return this.rpcWalletId;
+            }
+            const clientWallet = eth_wallet_3.Wallet.getClientInstance();
+            const networkList = Object.values(((_a = components_2.application.store) === null || _a === void 0 ? void 0 : _a.networkMap) || []);
+            const instanceId = clientWallet.initRpcWallet({
+                networks: networkList,
+                defaultChainId,
+                infuraId: (_b = components_2.application.store) === null || _b === void 0 ? void 0 : _b.infuraId,
+                multicalls: (_c = components_2.application.store) === null || _c === void 0 ? void 0 : _c.multicalls
+            });
+            this.rpcWalletId = instanceId;
+            if (clientWallet.address) {
+                const rpcWallet = eth_wallet_3.Wallet.getRpcWalletInstance(instanceId);
+                rpcWallet.address = clientWallet.address;
+            }
+            return instanceId;
         }
-        if (options.networks) {
-            setNetworkList(options.networks, options.infuraId);
+        setNetworkList(networkList, infuraId) {
+            const wallet = eth_wallet_3.Wallet.getClientInstance();
+            this.networkMap = {};
+            const defaultNetworkList = (0, scom_network_list_1.default)();
+            const defaultNetworkMap = defaultNetworkList.reduce((acc, cur) => {
+                acc[cur.chainId] = cur;
+                return acc;
+            }, {});
+            for (let network of networkList) {
+                const networkInfo = defaultNetworkMap[network.chainId];
+                if (!networkInfo)
+                    continue;
+                if (infuraId && network.rpcUrls && network.rpcUrls.length > 0) {
+                    for (let i = 0; i < network.rpcUrls.length; i++) {
+                        network.rpcUrls[i] = network.rpcUrls[i].replace(/{InfuraId}/g, infuraId);
+                    }
+                }
+                this.networkMap[network.chainId] = Object.assign(Object.assign({}, networkInfo), network);
+                wallet.setNetworkInfo(this.networkMap[network.chainId]);
+            }
         }
-    };
-    exports.setDataFromConfig = setDataFromConfig;
+        getRpcWallet() {
+            return this.rpcWalletId ? eth_wallet_3.Wallet.getRpcWalletInstance(this.rpcWalletId) : null;
+        }
+        isRpcWalletConnected() {
+            const wallet = this.getRpcWallet();
+            return wallet === null || wallet === void 0 ? void 0 : wallet.isConnected;
+        }
+        getChainId() {
+            const rpcWallet = this.getRpcWallet();
+            return rpcWallet === null || rpcWallet === void 0 ? void 0 : rpcWallet.chainId;
+        }
+    }
+    exports.State = State;
     function isClientWalletConnected() {
         const wallet = eth_wallet_3.Wallet.getClientInstance();
         return wallet.isConnected;
     }
     exports.isClientWalletConnected = isClientWalletConnected;
-    function isRpcWalletConnected() {
-        const wallet = getRpcWallet();
-        return wallet === null || wallet === void 0 ? void 0 : wallet.isConnected;
-    }
-    exports.isRpcWalletConnected = isRpcWalletConnected;
-    function getChainId() {
-        const rpcWallet = getRpcWallet();
-        return rpcWallet === null || rpcWallet === void 0 ? void 0 : rpcWallet.chainId;
-    }
-    exports.getChainId = getChainId;
-    function initRpcWallet(defaultChainId) {
-        if (exports.state.rpcWalletId) {
-            return exports.state.rpcWalletId;
-        }
-        const clientWallet = eth_wallet_3.Wallet.getClientInstance();
-        const networkList = Object.values(components_2.application.store.networkMap);
-        const instanceId = clientWallet.initRpcWallet({
-            networks: networkList,
-            defaultChainId,
-            infuraId: components_2.application.store.infuraId,
-            multicalls: components_2.application.store.multicalls
-        });
-        exports.state.rpcWalletId = instanceId;
-        if (clientWallet.address) {
-            const rpcWallet = eth_wallet_3.Wallet.getRpcWalletInstance(instanceId);
-            rpcWallet.address = clientWallet.address;
-        }
-        return instanceId;
-    }
-    exports.initRpcWallet = initRpcWallet;
-    function getRpcWallet() {
-        return eth_wallet_3.Wallet.getRpcWalletInstance(exports.state.rpcWalletId);
-    }
-    exports.getRpcWallet = getRpcWallet;
-    function getClientWallet() {
-        return eth_wallet_3.Wallet.getClientInstance();
-    }
-    exports.getClientWallet = getClientWallet;
 });
 define("@scom/scom-investor-claim/store/index.ts", ["require", "exports", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/store/utils.ts"], function (require, exports, assets_1, utils_1) {
     "use strict";
@@ -1023,24 +1013,23 @@ define("@scom/scom-investor-claim/contracts/oswap-drip-contract/index.ts", ["req
     ///<amd-module name='@scom/scom-investor-claim/contracts/oswap-drip-contract/index.ts'/> 
     exports.Contracts = Contracts;
 });
-define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", "@ijstech/eth-wallet", "@scom/scom-investor-claim/contracts/oswap-drip-contract/index.ts", "@scom/scom-investor-claim/store/index.ts"], function (require, exports, eth_wallet_4, index_2, index_3) {
+define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", "@ijstech/eth-wallet", "@scom/scom-investor-claim/contracts/oswap-drip-contract/index.ts"], function (require, exports, eth_wallet_4, index_2) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.investorClaimToken = exports.getLatestInvestorClaimTokenInfo = exports.getInvestorClaimInfo = void 0;
-    const getInvestorClaimInfo = async (campaign) => {
+    const getInvestorClaimInfo = async (wallet, campaign) => {
         if (!campaign)
             return undefined;
-        const extendedInfo = await getInvestorClaimExtendedInfo(campaign.dripAddress);
+        const extendedInfo = await getInvestorClaimExtendedInfo(wallet, campaign.dripAddress);
         return Object.assign(Object.assign({}, campaign), extendedInfo);
     };
     exports.getInvestorClaimInfo = getInvestorClaimInfo;
-    const getInvestorClaimExtendedInfo = async (dripAddress) => {
+    const getInvestorClaimExtendedInfo = async (wallet, dripAddress) => {
         const zeroAmounts = {
             claimable: '0',
             lockedAmount: '0'
         };
         try {
-            const wallet = (0, index_3.getRpcWallet)();
             const currentAddress = wallet.address;
             const drip = new index_2.Contracts.Drip(wallet, dripAddress);
             const balance = await drip.balanceOf(currentAddress);
@@ -1077,8 +1066,7 @@ define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", 
             return zeroAmounts;
         }
     };
-    const getLatestInvestorClaimTokenInfo = async (dripAddress, lockId) => {
-        let wallet = (0, index_3.getRpcWallet)();
+    const getLatestInvestorClaimTokenInfo = async (wallet, dripAddress, lockId) => {
         let drip = new index_2.Contracts.Drip(wallet, dripAddress);
         let info = await drip.getInfo(lockId);
         let maxClaimedFundsInWei = await drip.maximumAllowedClaimedFunds(lockId);
@@ -1097,7 +1085,7 @@ define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", 
         if (!contractAddress)
             return;
         try {
-            let wallet = (0, index_3.getRpcWallet)();
+            let wallet = eth_wallet_4.Wallet.getClientInstance();
             let drip = new index_2.Contracts.Drip(wallet, contractAddress);
             let receipt = await drip.claim(id);
             return receipt;
@@ -1396,7 +1384,7 @@ define("@scom/scom-investor-claim/formSchema.json.ts", ["require", "exports"], f
         }
     };
 });
-define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.json.ts"], function (require, exports, components_4, eth_wallet_5, assets_3, index_4, index_5, index_6, index_css_1, scom_token_list_1, data_json_1, formSchema_json_1) {
+define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.json.ts"], function (require, exports, components_4, eth_wallet_5, assets_3, index_3, index_4, index_5, index_css_1, scom_token_list_1, data_json_1, formSchema_json_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
@@ -1418,13 +1406,13 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                                 _oldData = Object.assign({}, this._data);
                                 if ((userInputData === null || userInputData === void 0 ? void 0 : userInputData.campaigns) !== undefined)
                                     this._data.campaigns = userInputData.campaigns;
-                                this.refreshUI();
+                                await this.resetRpcWallet();
                                 if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(this._data);
                             },
                             undo: async () => {
                                 this._data = Object.assign({}, _oldData);
-                                this.refreshUI();
+                                this.initializeWidgetConfig();
                                 if (builder === null || builder === void 0 ? void 0 : builder.setData)
                                     builder.setData(this._data);
                             },
@@ -1518,24 +1506,31 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
         async getData() {
             return this._data;
         }
-        async setData(value) {
+        async resetRpcWallet() {
             var _a;
-            this._data = value;
-            const rpcWalletId = (0, index_5.initRpcWallet)(this.defaultChainId);
-            const rpcWallet = (0, index_5.getRpcWallet)();
-            const event = rpcWallet.registerWalletEvent(this, eth_wallet_5.Constants.RpcWalletEvent.Connected, async (connected) => {
-                await this.initializeWidgetConfig();
+            this.removeRpcWalletEvents();
+            const rpcWalletId = await this.state.initRpcWallet(this.defaultChainId);
+            const rpcWallet = this.rpcWallet;
+            const chainChangedEvent = rpcWallet.registerWalletEvent(this, eth_wallet_5.Constants.RpcWalletEvent.ChainChanged, async (chainId) => {
+                this.initializeWidgetConfig();
             });
-            this.rpcWalletEvents.push(event);
+            const connectedEvent = rpcWallet.registerWalletEvent(this, eth_wallet_5.Constants.RpcWalletEvent.Connected, async (connected) => {
+                this.initializeWidgetConfig(true);
+            });
+            this.rpcWalletEvents.push(chainChangedEvent, connectedEvent);
             const data = {
                 defaultChainId: this.defaultChainId,
                 wallets: this.wallets,
                 networks: this.networks,
                 showHeader: this.showHeader,
-                rpcWalletId: rpcWallet.instanceId
+                rpcWalletId: rpcWallet.instanceId || ''
             };
             if ((_a = this.dappContainer) === null || _a === void 0 ? void 0 : _a.setData)
                 this.dappContainer.setData(data);
+        }
+        async setData(value) {
+            this._data = value;
+            await this.resetRpcWallet();
             this.initializeWidgetConfig();
         }
         async getTag() {
@@ -1609,8 +1604,14 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
         }
         get campaignInfo() {
             var _a;
-            const chainId = (0, index_5.getChainId)();
+            const chainId = this.chainId;
             return (_a = this._data.campaigns) === null || _a === void 0 ? void 0 : _a.find(v => v.chainId === chainId && v.dripAddress);
+        }
+        get chainId() {
+            return this.state.getChainId();
+        }
+        get rpcWallet() {
+            return this.state.getRpcWallet();
         }
         constructor(parent, options) {
             super(parent, options);
@@ -1624,30 +1625,23 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
             this.defaultEdit = true;
             this.listTimer = [];
             this.rpcWalletEvents = [];
-            this.clientEvents = [];
             this.symbol = 'OSWAP'; // TODO - Change this by the token address that is taken from the API
-            this.registerEvent = () => {
-                this.clientEvents.push(this.$eventBus.register(this, "chainChanged" /* EventId.chainChanged */, this.initializeWidgetConfig));
-            };
-            this.refreshUI = () => {
-                this.initializeWidgetConfig();
-            };
             this.initializeWidgetConfig = async (hideLoading) => {
                 setTimeout(async () => {
                     if (!hideLoading && this.loadingElm) {
                         this.loadingElm.visible = true;
                     }
-                    if (!(0, index_5.isClientWalletConnected)() || !this.checkValidation()) {
+                    if (!(0, index_4.isClientWalletConnected)() || !this.checkValidation()) {
                         await this.renderEmpty();
                         return;
                     }
-                    scom_token_list_1.tokenStore.updateTokenMapData((0, index_5.getChainId)());
-                    const rpcWallet = (0, index_5.getRpcWallet)();
+                    scom_token_list_1.tokenStore.updateTokenMapData(this.chainId);
+                    const rpcWallet = this.rpcWallet;
                     if (rpcWallet.address) {
                         scom_token_list_1.tokenStore.updateAllTokenBalances(rpcWallet);
                     }
                     await eth_wallet_5.Wallet.getClientInstance().init();
-                    this.campaign = await (0, index_6.getInvestorClaimInfo)(this.campaignInfo);
+                    this.campaign = await (0, index_5.getInvestorClaimInfo)(rpcWallet, this.campaignInfo);
                     await this.renderCampaign();
                     if (!hideLoading && this.loadingElm) {
                         this.loadingElm.visible = false;
@@ -1668,13 +1662,13 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.txStatusModal.showModal();
             };
             this.onClaim = async (btnClaim, data) => {
-                if (!(0, index_5.isClientWalletConnected)() || !(0, index_5.isRpcWalletConnected)()) {
+                if (!(0, index_4.isClientWalletConnected)() || !this.state.isRpcWalletConnected()) {
                     this.connectWallet();
                     return;
                 }
                 if (!data)
                     return;
-                this.showMessage('warning', `Claiming ${(0, index_4.formatNumber)(data.claimable)} ${this.symbol}`);
+                this.showMessage('warning', `Claiming ${(0, index_3.formatNumber)(data.claimable)} ${this.symbol}`);
                 const callBack = async (err, reply) => {
                     if (err) {
                         this.showMessage('error', err);
@@ -1690,11 +1684,11 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     btnClaim.rightIcon.visible = false;
                     btnClaim.enabled = true;
                 };
-                (0, index_4.registerSendTxEvents)({
+                (0, index_3.registerSendTxEvents)({
                     transactionHash: callBack,
                     confirmation: confirmationCallBack
                 });
-                (0, index_6.investorClaimToken)(data.dripAddress, data.lockId, callBack);
+                (0, index_5.investorClaimToken)(data.dripAddress, data.lockId, callBack);
             };
             this.checkValidation = () => {
                 var _a, _b;
@@ -1709,7 +1703,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.listTimer = [];
             };
             this.connectWallet = async () => {
-                if (!(0, index_5.isClientWalletConnected)()) {
+                if (!(0, index_4.isClientWalletConnected)()) {
                     if (this.mdWallet) {
                         await components_4.application.loadPackage('@scom/scom-wallet-modal', '*');
                         this.mdWallet.networks = this.networks;
@@ -1718,14 +1712,13 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     }
                     return;
                 }
-                if (!(0, index_5.isRpcWalletConnected)()) {
-                    const chainId = (0, index_5.getChainId)();
+                if (!this.state.isRpcWalletConnected()) {
                     const clientWallet = eth_wallet_5.Wallet.getClientInstance();
-                    await clientWallet.switchNetwork(chainId);
+                    await clientWallet.switchNetwork(this.chainId);
                 }
             };
             this.initEmptyUI = async () => {
-                const isClientConnected = (0, index_5.isClientWalletConnected)();
+                const isClientConnected = (0, index_4.isClientWalletConnected)();
                 this.pnlEmpty.clearInnerHTML();
                 this.pnlEmpty.appendChild(this.$render("i-panel", { class: "no-campaign", height: "100%", background: { color: Theme.background.main } },
                     this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
@@ -1753,25 +1746,25 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     var _a;
                     if (!((_a = this.campaign) === null || _a === void 0 ? void 0 : _a.lockId))
                         return;
-                    const latestInfo = await (0, index_6.getLatestInvestorClaimTokenInfo)(this.campaign.dripAddress, this.campaign.lockId);
+                    const latestInfo = await (0, index_5.getLatestInvestorClaimTokenInfo)(this.rpcWallet, this.campaign.dripAddress, this.campaign.lockId);
                     info = Object.assign(Object.assign({}, latestInfo), info);
-                    lbLockedAmount.caption = `${(0, index_4.formatNumber)(info.lockedAmount)} ${this.symbol}`;
-                    lbClaimable.caption = `${(0, index_4.formatNumber)(info.claimable)} ${this.symbol}`;
-                    const isRpcConnected = (0, index_5.isRpcWalletConnected)();
-                    const isClientConnected = (0, index_5.isClientWalletConnected)();
+                    lbLockedAmount.caption = `${(0, index_3.formatNumber)(info.lockedAmount)} ${this.symbol}`;
+                    lbClaimable.caption = `${(0, index_3.formatNumber)(info.claimable)} ${this.symbol}`;
+                    const isRpcConnected = this.state.isRpcWalletConnected();
+                    const isClientConnected = (0, index_4.isClientWalletConnected)();
                     btnClaim.caption = !isClientConnected ? 'Connect Wallet' : !isRpcConnected ? 'Switch Network' : 'Claim';
                     btnClaim.enabled = !isClientConnected || !isRpcConnected || (btnClaim.enabled && parseFloat(info.claimable) > 0);
                 };
                 const lbLockedAmount = await components_4.Label.create({
-                    caption: `${(0, index_4.formatNumber)(this.campaign.lockedAmount)} ${this.symbol}`,
+                    caption: `${(0, index_3.formatNumber)(this.campaign.lockedAmount)} ${this.symbol}`,
                     margin: { left: 'auto' }
                 });
                 const lbClaimable = await components_4.Label.create({
-                    caption: `${(0, index_4.formatNumber)(this.campaign.claimable)} ${this.symbol}`,
+                    caption: `${(0, index_3.formatNumber)(this.campaign.claimable)} ${this.symbol}`,
                     margin: { left: 'auto' }
                 });
                 const btnClaim = await components_4.Button.create({
-                    caption: !(0, index_5.isClientWalletConnected)() ? 'Connect Wallet' : !(0, index_5.isRpcWalletConnected)() ? 'Switch Network' : 'Claim',
+                    caption: !(0, index_4.isClientWalletConnected)() ? 'Connect Wallet' : !this.state.isRpcWalletConnected() ? 'Switch Network' : 'Claim',
                     rightIcon: { spin: true, visible: false },
                     margin: { top: 8, left: 'auto', right: 'auto' }
                 });
@@ -1781,12 +1774,12 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 }
                 let vestingStart = this.campaign.vestingStart ? components_4.moment.unix(this.campaign.vestingStart).format('YYYY-MM-DD HH:mm:ss') : '';
                 let vestingEnd = this.campaign.vestingEnd ? components_4.moment.unix(this.campaign.vestingEnd).format('YYYY-MM-DD HH:mm:ss') : '';
-                btnClaim.enabled = !(0, index_5.isClientWalletConnected)() || !(0, index_5.isRpcWalletConnected)() || parseFloat(this.campaign.claimable) > 0;
+                btnClaim.enabled = !(0, index_4.isClientWalletConnected)() || !this.state.isRpcWalletConnected() || parseFloat(this.campaign.claimable) > 0;
                 btnClaim.onClick = () => this.onClaim(btnClaim, info);
                 this.pnlClaimInfo.clearInnerHTML();
                 this.pnlClaimInfo.appendChild(this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
                     this.$render("i-vstack", { gap: 8, horizontalAlignment: "center" },
-                        this.$render("i-image", { width: 75, height: 75, url: assets_3.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_5.fallBackUrl }),
+                        this.$render("i-image", { width: 75, height: 75, url: assets_3.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_4.fallBackUrl }),
                         this.$render("i-label", { caption: this.campaign.campaignName, font: { size: '1.25rem', color: Theme.text.secondary, bold: true } }),
                         this.$render("i-label", { caption: this.campaign.campaignDesc })),
                     this.$render("i-panel", { width: "100%", height: 2, background: { color: Theme.input.background } }),
@@ -1806,22 +1799,18 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                         btnClaim)));
                 this.pnlClaimInfo.visible = true;
             };
-            if (data_json_1.default)
-                (0, index_5.setDataFromConfig)(data_json_1.default);
-            this.$eventBus = components_4.application.EventBus;
-            this.registerEvent();
+            this.state = new index_4.State(data_json_1.default);
         }
-        onHide() {
-            this.dappContainer.onHide();
-            const rpcWallet = (0, index_5.getRpcWallet)();
+        removeRpcWalletEvents() {
+            const rpcWallet = this.rpcWallet;
             for (let event of this.rpcWalletEvents) {
                 rpcWallet.unregisterWalletEvent(event);
             }
             this.rpcWalletEvents = [];
-            for (let event of this.clientEvents) {
-                event.unregister();
-            }
-            this.clientEvents = [];
+        }
+        onHide() {
+            this.dappContainer.onHide();
+            this.removeRpcWalletEvents();
         }
         async init() {
             this.isReadyCallbackQueued = true;

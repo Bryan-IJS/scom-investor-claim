@@ -1,22 +1,17 @@
-import { moment, Module, Panel, Button, Label, Container, ControlElement, IEventBus, application, customModule, customElements, Styles } from '@ijstech/components';
+import { moment, Module, Panel, Button, Label, Container, ControlElement, application, customModule, customElements, Styles } from '@ijstech/components';
 import { Constants, IEventBusRegistry, Wallet } from '@ijstech/eth-wallet';
 import Assets from './assets';
 import {
 	formatNumber,
 	registerSendTxEvents,
-	EventId,
 	IClaimBasicInfo,
 	ICampaignInfo,
 	INetworkConfig,
 	ICampaign,
 } from './global/index';
 import {
-	getChainId,
-	setDataFromConfig,
+	State,
 	fallBackUrl,
-	initRpcWallet,
-	getRpcWallet,
-	isRpcWalletConnected,
 	isClientWalletConnected
 } from './store/index';
 import {
@@ -54,6 +49,7 @@ declare global {
 @customModule
 @customElements('i-scom-investor-claim')
 export default class ScomInvertorClaim extends Module {
+	private state: State;
 	private _data: IClaimBasicInfo = {
 		campaigns: [],
 		defaultChainId: 0,
@@ -63,7 +59,6 @@ export default class ScomInvertorClaim extends Module {
 	tag: any = {};
 	defaultEdit: boolean = true;
 
-	private $eventBus: IEventBus;
 	private loadingElm: Panel;
 	private campaign?: ICampaignInfo;
 	private pnlClaimInfo: Panel;
@@ -74,7 +69,6 @@ export default class ScomInvertorClaim extends Module {
 	private mdWallet: ScomWalletModal;
 
 	private rpcWalletEvents: IEventBusRegistry[] = [];
-	private clientEvents: any[] = [];
 	private symbol = 'OSWAP'; // TODO - Change this by the token address that is taken from the API
 
 	private _getActions(category?: string) {
@@ -93,12 +87,12 @@ export default class ScomInvertorClaim extends Module {
 						execute: async () => {
 							_oldData = { ...this._data };
 							if (userInputData?.campaigns !== undefined) this._data.campaigns = userInputData.campaigns;
-							this.refreshUI();
+							await this.resetRpcWallet();
 							if (builder?.setData) builder.setData(this._data);
 						},
 						undo: async () => {
 							this._data = { ..._oldData };
-							this.refreshUI();
+							this.initializeWidgetConfig();
 							if (builder?.setData) builder.setData(this._data);
 						},
 						redo: () => { }
@@ -189,24 +183,31 @@ export default class ScomInvertorClaim extends Module {
 		return this._data;
 	}
 
+	private async resetRpcWallet() {
+    this.removeRpcWalletEvents();
+    const rpcWalletId = await this.state.initRpcWallet(this.defaultChainId);
+    const rpcWallet = this.rpcWallet;
+    const chainChangedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.ChainChanged, async (chainId: number) => {
+      this.initializeWidgetConfig();
+    });
+    const connectedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.Connected, async (connected: boolean) => {
+      this.initializeWidgetConfig(true);
+    });
+    this.rpcWalletEvents.push(chainChangedEvent, connectedEvent);
+
+    const data = {
+      defaultChainId: this.defaultChainId,
+      wallets: this.wallets,
+      networks: this.networks,
+      showHeader: this.showHeader,
+      rpcWalletId: rpcWallet.instanceId || ''
+    }
+    if (this.dappContainer?.setData) this.dappContainer.setData(data);
+  }
+
 	private async setData(value: IClaimBasicInfo) {
 		this._data = value;
-		const rpcWalletId = initRpcWallet(this.defaultChainId);
-		const rpcWallet = getRpcWallet();
-		const event = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.Connected, async (connected: boolean) => {
-			await this.initializeWidgetConfig();
-		});
-		this.rpcWalletEvents.push(event);
-
-		const data = {
-			defaultChainId: this.defaultChainId,
-			wallets: this.wallets,
-			networks: this.networks,
-			showHeader: this.showHeader,
-			rpcWalletId: rpcWallet.instanceId
-		}
-		if (this.dappContainer?.setData) this.dappContainer.setData(data);
-
+		await this.resetRpcWallet();
 		this.initializeWidgetConfig();
 	}
 
@@ -288,37 +289,35 @@ export default class ScomInvertorClaim extends Module {
 	}
 
 	private get campaignInfo() {
-		const chainId = getChainId();
+		const chainId = this.chainId;
 		return this._data.campaigns?.find(v => v.chainId === chainId && v.dripAddress);
+	}
+
+	private get chainId() {
+		return this.state.getChainId();
+	}
+
+	private get rpcWallet() {
+		return this.state.getRpcWallet();
 	}
 
 	constructor(parent?: Container, options?: ScomInvestorClaimElement) {
 		super(parent, options);
-		if (configData) setDataFromConfig(configData);
-		this.$eventBus = application.EventBus;
-		this.registerEvent();
+		this.state = new State(configData);
 	}
 
-	onHide() {
-		this.dappContainer.onHide();
-		const rpcWallet = getRpcWallet();
-		for (let event of this.rpcWalletEvents) {
-			rpcWallet.unregisterWalletEvent(event);
-		}
-		this.rpcWalletEvents = [];
-		for (let event of this.clientEvents) {
-			event.unregister();
-		}
-		this.clientEvents = [];
-	}
+	removeRpcWalletEvents() {
+    const rpcWallet = this.rpcWallet;
+    for (let event of this.rpcWalletEvents) {
+      rpcWallet.unregisterWalletEvent(event);
+    }
+    this.rpcWalletEvents = [];
+  }
 
-	private registerEvent = () => {
-		this.clientEvents.push(this.$eventBus.register(this, EventId.chainChanged, this.initializeWidgetConfig));
-	}
-
-	private refreshUI = () => {
-		this.initializeWidgetConfig();
-	}
+  onHide() {
+    this.dappContainer.onHide();
+    this.removeRpcWalletEvents();
+  }
 
 	private initializeWidgetConfig = async (hideLoading?: boolean) => {
 		setTimeout(async () => {
@@ -329,13 +328,13 @@ export default class ScomInvertorClaim extends Module {
 				await this.renderEmpty();
 				return;
 			}
-			tokenStore.updateTokenMapData(getChainId());
-			const rpcWallet = getRpcWallet();
+			tokenStore.updateTokenMapData(this.chainId);
+			const rpcWallet = this.rpcWallet;
 			if (rpcWallet.address) {
 				tokenStore.updateAllTokenBalances(rpcWallet);
 			}
 			await Wallet.getClientInstance().init();
-			this.campaign = await getInvestorClaimInfo(this.campaignInfo);
+			this.campaign = await getInvestorClaimInfo(rpcWallet, this.campaignInfo);
 			await this.renderCampaign();
 			if (!hideLoading && this.loadingElm) {
 				this.loadingElm.visible = false;
@@ -356,7 +355,7 @@ export default class ScomInvertorClaim extends Module {
 	}
 
 	private onClaim = async (btnClaim: Button, data: ICampaignInfo) => {
-		if (!isClientWalletConnected() || !isRpcWalletConnected()) {
+		if (!isClientWalletConnected() || !this.state.isRpcWalletConnected()) {
 			this.connectWallet();
 			return;
 		}
@@ -408,10 +407,9 @@ export default class ScomInvertorClaim extends Module {
 			}
 			return;
 		}
-		if (!isRpcWalletConnected()) {
-			const chainId = getChainId();
+		if (!this.state.isRpcWalletConnected()) {
 			const clientWallet = Wallet.getClientInstance();
-			await clientWallet.switchNetwork(chainId);
+			await clientWallet.switchNetwork(this.chainId);
 		}
 	}
 
@@ -449,14 +447,14 @@ export default class ScomInvertorClaim extends Module {
 		let info = { ...this.campaign };
 		const updateClaimTokenInfo = async () => {
 			if (!this.campaign?.lockId) return;
-			const latestInfo = await getLatestInvestorClaimTokenInfo(this.campaign.dripAddress, this.campaign.lockId);
+			const latestInfo = await getLatestInvestorClaimTokenInfo(this.rpcWallet, this.campaign.dripAddress, this.campaign.lockId);
 			info = {
 				...latestInfo,
 				...info
 			};
 			lbLockedAmount.caption = `${formatNumber(info.lockedAmount)} ${this.symbol}`;
 			lbClaimable.caption = `${formatNumber(info.claimable)} ${this.symbol}`;
-			const isRpcConnected = isRpcWalletConnected();
+			const isRpcConnected = this.state.isRpcWalletConnected();
 			const isClientConnected = isClientWalletConnected();
 			btnClaim.caption = !isClientConnected ? 'Connect Wallet' : !isRpcConnected ? 'Switch Network' : 'Claim';
 			btnClaim.enabled = !isClientConnected || !isRpcConnected || (btnClaim.enabled && parseFloat(info.claimable) > 0);
@@ -471,7 +469,7 @@ export default class ScomInvertorClaim extends Module {
 			margin: { left: 'auto' }
 		});
 		const btnClaim = await Button.create({
-			caption: !isClientWalletConnected() ? 'Connect Wallet' : !isRpcWalletConnected() ? 'Switch Network' : 'Claim',
+			caption: !isClientWalletConnected() ? 'Connect Wallet' : !this.state.isRpcWalletConnected() ? 'Switch Network' : 'Claim',
 			rightIcon: { spin: true, visible: false },
 			margin: { top: 8, left: 'auto', right: 'auto' }
 		});
@@ -483,7 +481,7 @@ export default class ScomInvertorClaim extends Module {
 		let vestingStart = this.campaign.vestingStart ? moment.unix(this.campaign.vestingStart).format('YYYY-MM-DD HH:mm:ss') : '';
 		let vestingEnd = this.campaign.vestingEnd ? moment.unix(this.campaign.vestingEnd).format('YYYY-MM-DD HH:mm:ss') : '';
 
-		btnClaim.enabled = !isClientWalletConnected() || !isRpcWalletConnected() || parseFloat(this.campaign.claimable) > 0;
+		btnClaim.enabled = !isClientWalletConnected() || !this.state.isRpcWalletConnected() || parseFloat(this.campaign.claimable) > 0;
 		btnClaim.onClick = () => this.onClaim(btnClaim, info);
 
 		this.pnlClaimInfo.clearInnerHTML();
