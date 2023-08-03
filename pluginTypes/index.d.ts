@@ -58,30 +58,26 @@ declare module "@scom/scom-investor-claim/global/utils/index.ts" {
 }
 /// <amd-module name="@scom/scom-investor-claim/global/index.ts" />
 declare module "@scom/scom-investor-claim/global/index.ts" {
-    export const enum EventId {
-        Paid = "Paid",
-        chainChanged = "chainChanged"
-    }
     export * from "@scom/scom-investor-claim/global/utils/index.ts";
 }
 /// <amd-module name="@scom/scom-investor-claim/store/utils.ts" />
 declare module "@scom/scom-investor-claim/store/utils.ts" {
     import { INetwork } from '@ijstech/eth-wallet';
-    export const state: {
+    export class State {
         networkMap: {
             [key: number]: INetwork;
         };
         infuraId: string;
         rpcWalletId: string;
-    };
-    export const getInfuraId: () => string;
-    export const setDataFromConfig: (options: any) => void;
+        constructor(options: any);
+        private initData;
+        initRpcWallet(defaultChainId: number): string;
+        private setNetworkList;
+        getRpcWallet(): import("@ijstech/eth-wallet").IRpcWallet;
+        isRpcWalletConnected(): boolean;
+        getChainId(): number;
+    }
     export function isClientWalletConnected(): boolean;
-    export function isRpcWalletConnected(): boolean;
-    export function getChainId(): number;
-    export function initRpcWallet(defaultChainId: number): string;
-    export function getRpcWallet(): import("@ijstech/eth-wallet").IRpcWallet;
-    export function getClientWallet(): import("@ijstech/eth-wallet").IClientWallet;
 }
 /// <amd-module name="@scom/scom-investor-claim/store/index.ts" />
 declare module "@scom/scom-investor-claim/store/index.ts" {
@@ -690,9 +686,10 @@ declare module "@scom/scom-investor-claim/contracts/oswap-drip-contract/index.ts
 }
 /// <amd-module name="@scom/scom-investor-claim/claim-utils/index.ts" />
 declare module "@scom/scom-investor-claim/claim-utils/index.ts" {
+    import { IWallet } from '@ijstech/eth-wallet';
     import { ICampaign, ICampaignInfo } from "@scom/scom-investor-claim/global/index.ts";
-    const getInvestorClaimInfo: (campaign: ICampaign) => Promise<ICampaignInfo>;
-    const getLatestInvestorClaimTokenInfo: (dripAddress: string, lockId: number) => Promise<{
+    const getInvestorClaimInfo: (wallet: IWallet, campaign: ICampaign) => Promise<ICampaignInfo>;
+    const getLatestInvestorClaimTokenInfo: (wallet: IWallet, dripAddress: string, lockId: number) => Promise<{
         claimable: string;
         lockedAmount: string;
     }>;
@@ -853,10 +850,10 @@ declare module "@scom/scom-investor-claim" {
         }
     }
     export default class ScomInvertorClaim extends Module {
+        private state;
         private _data;
         tag: any;
         defaultEdit: boolean;
-        private $eventBus;
         private loadingElm;
         private campaign?;
         private pnlClaimInfo;
@@ -866,7 +863,6 @@ declare module "@scom/scom-investor-claim" {
         private dappContainer;
         private mdWallet;
         private rpcWalletEvents;
-        private clientEvents;
         private symbol;
         private _getActions;
         getConfigurators(): ({
@@ -1091,6 +1087,7 @@ declare module "@scom/scom-investor-claim" {
             setTag: any;
         })[];
         private getData;
+        private resetRpcWallet;
         private setData;
         private getTag;
         private updateTag;
@@ -1106,10 +1103,11 @@ declare module "@scom/scom-investor-claim" {
         get showHeader(): boolean;
         set showHeader(value: boolean);
         private get campaignInfo();
+        private get chainId();
+        private get rpcWallet();
         constructor(parent?: Container, options?: ScomInvestorClaimElement);
+        removeRpcWalletEvents(): void;
         onHide(): void;
-        private registerEvent;
-        private refreshUI;
         private initializeWidgetConfig;
         private showMessage;
         private onClaim;

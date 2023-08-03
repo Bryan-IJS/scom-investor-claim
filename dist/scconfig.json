@@ -1,0 +1,15 @@
+{
+    "name": "@scom/scom-investor-claim",
+    "type": "widget",
+    "version": "0.1.0",
+    "dependencies": [
+        "@ijstech/components",
+        "@ijstech/eth-wallet",
+        "@scom/scom-wallet-modal",
+        "@scom/scom-network-list",
+        "@ijstech/eth-contract",
+        "@scom/scom-token-list",
+        "@scom/scom-dapp-container",
+        "@scom/scom-tx-status-modal"
+    ]
+}
