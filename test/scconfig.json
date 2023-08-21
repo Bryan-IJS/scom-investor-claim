@@ -17,7 +17,9 @@
     "@ijstech/eth-wallet": "*",
     "@scom/scom-dapp-container": "*",
     "@scom/scom-wallet-modal": "*",
-    "@scom/scom-token-list": "*"
+    "@scom/scom-token-list": "*",
+    "@scom/scom-network-picker": "*",
+    "@scom/oswap-drip-contract": "*"
   },
   "menus": [
     {

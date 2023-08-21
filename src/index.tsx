@@ -24,7 +24,7 @@ import { tokenStore } from '@scom/scom-token-list';
 import ScomDappContainer from '@scom/scom-dapp-container';
 import ScomWalletModal, { IWalletPlugin } from '@scom/scom-wallet-modal';
 import configData from './data.json';
-import formSchema from './formSchema.json';
+import formSchema from './formSchema';
 import ScomTxStatusModal from '@scom/scom-tx-status-modal';
 
 const Theme = Styles.Theme.ThemeVars;
@@ -99,7 +99,8 @@ export default class ScomInvertorClaim extends Module {
 					}
 				},
 				userInputDataSchema: formSchema.general.dataSchema,
-				userInputUISchema: formSchema.general.uiSchema
+				userInputUISchema: formSchema.general.uiSchema,
+				customControls: formSchema.general.customControls
 			},
 			{
 				name: 'Theme Settings',

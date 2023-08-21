@@ -1,5 +1,5 @@
 import { BigNumber, IWallet, Utils, Wallet } from '@ijstech/eth-wallet';
-import { Contracts as DripContracts } from '../contracts/oswap-drip-contract/index';
+import { Contracts as DripContracts } from '@scom/oswap-drip-contract';
 import { ICampaign, ICampaignInfo, IClaimInfoOption } from '../global/index';
 
 const getInvestorClaimInfo = async (wallet: IWallet, campaign: ICampaign) => {

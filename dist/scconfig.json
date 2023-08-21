@@ -5,11 +5,13 @@
     "dependencies": [
         "@ijstech/components",
         "@ijstech/eth-wallet",
-        "@scom/scom-wallet-modal",
         "@scom/scom-network-list",
-        "@ijstech/eth-contract",
+        "@scom/scom-wallet-modal",
+        "@scom/oswap-drip-contract",
         "@scom/scom-token-list",
+        "@scom/scom-multicall",
         "@scom/scom-dapp-container",
+        "@scom/scom-network-picker",
         "@scom/scom-tx-status-modal"
     ]
 }
