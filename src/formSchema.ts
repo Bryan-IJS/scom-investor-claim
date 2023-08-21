@@ -1,3 +1,7 @@
+import ScomNetworkPicker from '@scom/scom-network-picker';
+
+const chainIds = [1, 56, 137, 250, 97, 80001, 43113, 43114];
+
 const theme = {
     backgroundColor: {
         type: 'string',
@@ -34,7 +38,7 @@ export default {
                         properties: {
                             chainId: {
                                 type: 'number',
-                                enum: [1, 56, 137, 250, 97, 80001, 43113, 43114],
+                                enum: chainIds,
                                 required: true
                             },
                             campaignName: {
@@ -66,6 +70,23 @@ export default {
                     }
                 }
             ]
+        },
+        customControls: {
+            "#/properties/campaigns/properties/chainId": {
+                render: () => {
+                    const networkPicker = new ScomNetworkPicker(undefined, {
+                        type: 'combobox',
+                        networks: chainIds.map(v => { return { chainId: v } })
+                    });
+                    return networkPicker;
+                },
+                getData: (control: ScomNetworkPicker) => {
+                    return control.selectedNetwork?.chainId;
+                },
+                setData: (control: ScomNetworkPicker, value: number) => {
+                    control.setNetworkByChainId(value);
+                }
+            }
         }
     },
     theme: {
