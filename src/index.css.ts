@@ -1,5 +1,4 @@
 import { Styles } from '@ijstech/components';
-import Assets from './assets';
 const Theme = Styles.Theme.ThemeVars;
 
 const colorVar = {
@@ -8,20 +7,6 @@ const colorVar = {
   darkBg: '#181E3E 0% 0% no-repeat padding-box',
   primaryDisabled: 'transparent linear-gradient(270deg,#351f52,#552a42) 0% 0% no-repeat padding-box !important'
 }
-
-Styles.fontFace({
-  fontFamily: "Montserrat Regular",
-  src: `url("${Assets.fullPath('fonts/montserrat/Montserrat-Regular.ttf')}") format("truetype")`,
-  fontWeight: 'nomal',
-  fontStyle: 'normal'
-})
-
-Styles.fontFace({
-  fontFamily: "Raleway Bold",
-  src: `url("${Assets.fullPath('fonts/raleway/Raleway-Bold.ttf')}") format("truetype")`,
-  fontWeight: 'bold',
-  fontStyle: 'normal'
-})
 
 export const claimDappContainer = Styles.style({
   $nest: {
@@ -48,9 +33,6 @@ export const claimDappContainer = Styles.style({
 
 export const claimComponent = Styles.style({
   $nest: {
-    'i-label': {
-      fontFamily: 'Montserrat Regular',
-    },
     'span': {
       letterSpacing: '0.15px',
     },
@@ -68,7 +50,6 @@ export const claimComponent = Styles.style({
       transition: 'background .3s ease',
       fontSize: '1rem',
       fontWeight: 'bold',
-      fontFamily: 'Raleway Bold',
       $nest: {
         'i-icon.loading-icon': {
           marginInline: '0.25rem',
