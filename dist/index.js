@@ -282,7 +282,7 @@ define("@scom/scom-investor-claim/claim-utils/index.ts", ["require", "exports", 
     };
     exports.investorClaimToken = investorClaimToken;
 });
-define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstech/components", "@scom/scom-investor-claim/assets.ts"], function (require, exports, components_3, assets_2) {
+define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstech/components"], function (require, exports, components_3) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     exports.claimComponent = exports.claimDappContainer = void 0;
@@ -293,18 +293,6 @@ define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstec
         darkBg: '#181E3E 0% 0% no-repeat padding-box',
         primaryDisabled: 'transparent linear-gradient(270deg,#351f52,#552a42) 0% 0% no-repeat padding-box !important'
     };
-    components_3.Styles.fontFace({
-        fontFamily: "Montserrat Regular",
-        src: `url("${assets_2.default.fullPath('fonts/montserrat/Montserrat-Regular.ttf')}") format("truetype")`,
-        fontWeight: 'nomal',
-        fontStyle: 'normal'
-    });
-    components_3.Styles.fontFace({
-        fontFamily: "Raleway Bold",
-        src: `url("${assets_2.default.fullPath('fonts/raleway/Raleway-Bold.ttf')}") format("truetype")`,
-        fontWeight: 'bold',
-        fontStyle: 'normal'
-    });
     exports.claimDappContainer = components_3.Styles.style({
         $nest: {
             'dapp-container-body': {
@@ -329,9 +317,6 @@ define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstec
     });
     exports.claimComponent = components_3.Styles.style({
         $nest: {
-            'i-label': {
-                fontFamily: 'Montserrat Regular',
-            },
             'span': {
                 letterSpacing: '0.15px',
             },
@@ -349,7 +334,6 @@ define("@scom/scom-investor-claim/index.css.ts", ["require", "exports", "@ijstec
                 transition: 'background .3s ease',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                fontFamily: 'Raleway Bold',
                 $nest: {
                     'i-icon.loading-icon': {
                         marginInline: '0.25rem',
@@ -588,7 +572,7 @@ define("@scom/scom-investor-claim/formSchema.ts", ["require", "exports", "@scom/
         }
     };
 });
-define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.ts"], function (require, exports, components_4, eth_wallet_5, assets_3, index_2, index_3, index_4, index_css_1, scom_token_list_1, data_json_1, formSchema_1) {
+define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components", "@ijstech/eth-wallet", "@scom/scom-investor-claim/assets.ts", "@scom/scom-investor-claim/global/index.ts", "@scom/scom-investor-claim/store/index.ts", "@scom/scom-investor-claim/claim-utils/index.ts", "@scom/scom-investor-claim/index.css.ts", "@scom/scom-token-list", "@scom/scom-investor-claim/data.json.ts", "@scom/scom-investor-claim/formSchema.ts"], function (require, exports, components_4, eth_wallet_5, assets_2, index_2, index_3, index_4, index_css_1, scom_token_list_1, data_json_1, formSchema_1) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     const Theme = components_4.Styles.Theme.ThemeVars;
@@ -927,7 +911,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.pnlEmpty.clearInnerHTML();
                 this.pnlEmpty.appendChild(this.$render("i-panel", { class: "no-campaign", height: "100%", background: { color: Theme.background.main } },
                     this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
-                        this.$render("i-image", { url: assets_3.default.fullPath('img/claim/TrollTrooper.svg') }),
+                        this.$render("i-image", { url: assets_2.default.fullPath('img/claim/TrollTrooper.svg') }),
                         this.$render("i-label", { caption: isClientConnected ? 'No Campaigns' : 'Please connect with your wallet!' }))));
                 this.pnlEmpty.visible = true;
             };
@@ -984,7 +968,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                 this.pnlClaimInfo.clearInnerHTML();
                 this.pnlClaimInfo.appendChild(this.$render("i-vstack", { gap: 10, verticalAlignment: "center" },
                     this.$render("i-vstack", { gap: 8, horizontalAlignment: "center" },
-                        this.$render("i-image", { width: 75, height: 75, url: assets_3.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_3.fallBackUrl }),
+                        this.$render("i-image", { width: 75, height: 75, url: assets_2.default.fullPath('img/tokens/openswap.png'), fallbackUrl: index_3.fallBackUrl }),
                         this.$render("i-label", { caption: this.campaign.campaignName, font: { size: '1.25rem', color: Theme.text.secondary, bold: true } }),
                         this.$render("i-label", { caption: this.campaign.campaignDesc })),
                     this.$render("i-panel", { width: "100%", height: 2, background: { color: Theme.input.background } }),
@@ -1049,7 +1033,7 @@ define("@scom/scom-investor-claim", ["require", "exports", "@ijstech/components"
                     this.$render("i-panel", { class: "claim-layout", height: "100%", margin: { left: 'auto', right: 'auto' } },
                         this.$render("i-vstack", { id: "loadingElm", class: "i-loading-overlay" },
                             this.$render("i-vstack", { class: "i-loading-spinner", horizontalAlignment: "center", verticalAlignment: "center" },
-                                this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_3.default.fullPath('img/loading.svg'), width: 36, height: 36 } }),
+                                this.$render("i-icon", { class: "i-loading-spinner_icon", image: { url: assets_2.default.fullPath('img/loading.svg'), width: 36, height: 36 } }),
                                 this.$render("i-label", { caption: "Loading...", font: { color: '#FD4A4C', size: '1.5em' }, class: "i-loading-spinner_text" }))),
                         this.$render("i-panel", { class: "claim-wapper" },
                             this.$render("i-hstack", { id: "pnlClaimInfo", horizontalAlignment: "center", padding: { top: 10, bottom: 10, left: 16, right: 16 } }),
