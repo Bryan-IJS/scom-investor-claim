@@ -134,97 +134,106 @@ declare module "@scom/scom-investor-claim/data.json.ts" {
 declare module "@scom/scom-investor-claim/formSchema.ts" {
     import ScomNetworkPicker from '@scom/scom-network-picker';
     const _default_2: {
-        general: {
-            dataSchema: {
-                type: string;
-                properties: {
-                    campaigns: {
+        dataSchema: {
+            type: string;
+            properties: {
+                campaigns: {
+                    type: string;
+                    items: {
                         type: string;
-                        items: {
-                            type: string;
-                            properties: {
-                                chainId: {
-                                    type: string;
-                                    enum: number[];
-                                    required: boolean;
-                                };
-                                campaignName: {
-                                    type: string;
-                                    required: boolean;
-                                };
-                                campaignDesc: {
-                                    type: string;
-                                };
-                                dripAddress: {
-                                    type: string;
-                                    required: boolean;
-                                };
+                        properties: {
+                            chainId: {
+                                type: string;
+                                enum: number[];
+                                required: boolean;
+                            };
+                            campaignName: {
+                                type: string;
+                                required: boolean;
+                            };
+                            campaignDesc: {
+                                type: string;
+                            };
+                            dripAddress: {
+                                type: string;
+                                required: boolean;
                             };
                         };
                     };
                 };
-            };
-            uiSchema: {
-                type: string;
-                elements: {
+                dark: {
                     type: string;
-                    scope: string;
-                    options: {
-                        detail: {
+                    properties: {
+                        backgroundColor: {
                             type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        textSecondary: {
+                            type: string;
+                            title: string;
+                            format: string;
                         };
                     };
-                }[];
-            };
-            customControls: {
-                "#/properties/campaigns/properties/chainId": {
-                    render: () => ScomNetworkPicker;
-                    getData: (control: ScomNetworkPicker) => number;
-                    setData: (control: ScomNetworkPicker, value: number) => void;
+                };
+                light: {
+                    type: string;
+                    properties: {
+                        backgroundColor: {
+                            type: string;
+                            format: string;
+                        };
+                        fontColor: {
+                            type: string;
+                            format: string;
+                        };
+                        textSecondary: {
+                            type: string;
+                            title: string;
+                            format: string;
+                        };
+                    };
                 };
             };
         };
-        theme: {
-            dataSchema: {
+        uiSchema: {
+            type: string;
+            elements: ({
                 type: string;
-                properties: {
-                    dark: {
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
                         type: string;
-                        properties: {
-                            backgroundColor: {
+                        scope: string;
+                        options: {
+                            detail: {
                                 type: string;
-                                format: string;
-                            };
-                            fontColor: {
-                                type: string;
-                                format: string;
-                            };
-                            textSecondary: {
-                                type: string;
-                                title: string;
-                                format: string;
                             };
                         };
-                    };
-                    light: {
+                    }[];
+                }[];
+            } | {
+                type: string;
+                label: string;
+                elements: {
+                    type: string;
+                    elements: {
                         type: string;
-                        properties: {
-                            backgroundColor: {
-                                type: string;
-                                format: string;
-                            };
-                            fontColor: {
-                                type: string;
-                                format: string;
-                            };
-                            textSecondary: {
-                                type: string;
-                                title: string;
-                                format: string;
-                            };
-                        };
-                    };
-                };
+                        label: string;
+                        scope: string;
+                    }[];
+                }[];
+            })[];
+        };
+        customControls: {
+            "#/properties/campaigns/properties/chainId": {
+                render: () => ScomNetworkPicker;
+                getData: (control: ScomNetworkPicker) => number;
+                setData: (control: ScomNetworkPicker, value: number) => void;
             };
         };
     };
@@ -269,7 +278,7 @@ declare module "@scom/scom-investor-claim" {
         getConfigurators(): ({
             name: string;
             target: string;
-            getActions: (category?: string) => ({
+            getActions: (category?: string) => {
                 name: string;
                 icon: string;
                 command: (builder: any, userInputData: any) => {
@@ -304,38 +313,6 @@ declare module "@scom/scom-investor-claim" {
                                 };
                             };
                         };
-                    };
-                };
-                userInputUISchema: {
-                    type: string;
-                    elements: {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                    }[];
-                };
-                customControls: {
-                    "#/properties/campaigns/properties/chainId": {
-                        render: () => import("@scom/scom-network-picker").default;
-                        getData: (control: import("@scom/scom-network-picker").default) => number;
-                        setData: (control: import("@scom/scom-network-picker").default, value: number) => void;
-                    };
-                };
-            } | {
-                name: string;
-                icon: string;
-                command: (builder: any, userInputData: any) => {
-                    execute: () => Promise<void>;
-                    undo: () => void;
-                    redo: () => void;
-                };
-                userInputDataSchema: {
-                    type: string;
-                    properties: {
                         dark: {
                             type: string;
                             properties: {
@@ -374,9 +351,44 @@ declare module "@scom/scom-investor-claim" {
                         };
                     };
                 };
-                userInputUISchema?: undefined;
-                customControls?: undefined;
-            })[];
+                userInputUISchema: {
+                    type: string;
+                    elements: ({
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                scope: string;
+                                options: {
+                                    detail: {
+                                        type: string;
+                                    };
+                                };
+                            }[];
+                        }[];
+                    } | {
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                label: string;
+                                scope: string;
+                            }[];
+                        }[];
+                    })[];
+                };
+                customControls: {
+                    "#/properties/campaigns/properties/chainId": {
+                        render: () => import("@scom/scom-network-picker").default;
+                        getData: (control: import("@scom/scom-network-picker").default) => number;
+                        setData: (control: import("@scom/scom-network-picker").default, value: number) => void;
+                    };
+                };
+            }[];
             getData: any;
             setData: (data: any) => Promise<void>;
             getTag: any;
@@ -386,7 +398,7 @@ declare module "@scom/scom-investor-claim" {
         } | {
             name: string;
             target: string;
-            getActions: () => ({
+            getActions: () => {
                 name: string;
                 icon: string;
                 command: (builder: any, userInputData: any) => {
@@ -421,38 +433,6 @@ declare module "@scom/scom-investor-claim" {
                                 };
                             };
                         };
-                    };
-                };
-                userInputUISchema: {
-                    type: string;
-                    elements: {
-                        type: string;
-                        scope: string;
-                        options: {
-                            detail: {
-                                type: string;
-                            };
-                        };
-                    }[];
-                };
-                customControls: {
-                    "#/properties/campaigns/properties/chainId": {
-                        render: () => import("@scom/scom-network-picker").default;
-                        getData: (control: import("@scom/scom-network-picker").default) => number;
-                        setData: (control: import("@scom/scom-network-picker").default, value: number) => void;
-                    };
-                };
-            } | {
-                name: string;
-                icon: string;
-                command: (builder: any, userInputData: any) => {
-                    execute: () => Promise<void>;
-                    undo: () => void;
-                    redo: () => void;
-                };
-                userInputDataSchema: {
-                    type: string;
-                    properties: {
                         dark: {
                             type: string;
                             properties: {
@@ -491,9 +471,44 @@ declare module "@scom/scom-investor-claim" {
                         };
                     };
                 };
-                userInputUISchema?: undefined;
-                customControls?: undefined;
-            })[];
+                userInputUISchema: {
+                    type: string;
+                    elements: ({
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                scope: string;
+                                options: {
+                                    detail: {
+                                        type: string;
+                                    };
+                                };
+                            }[];
+                        }[];
+                    } | {
+                        type: string;
+                        label: string;
+                        elements: {
+                            type: string;
+                            elements: {
+                                type: string;
+                                label: string;
+                                scope: string;
+                            }[];
+                        }[];
+                    })[];
+                };
+                customControls: {
+                    "#/properties/campaigns/properties/chainId": {
+                        render: () => import("@scom/scom-network-picker").default;
+                        getData: (control: import("@scom/scom-network-picker").default) => number;
+                        setData: (control: import("@scom/scom-network-picker").default, value: number) => void;
+                    };
+                };
+            }[];
             getLinkParams: () => {
                 data: string;
             };
