@@ -74,58 +74,52 @@ export default class ScomInvertorClaim extends Module {
 	private _getActions(category?: string) {
 		const actions = [
 			{
-				name: 'Settings',
-				icon: 'cog',
+				name: 'Edit',
+				icon: 'edit',
 				command: (builder: any, userInputData: any) => {
-					let _oldData: IClaimBasicInfo = {
+					let oldData: IClaimBasicInfo = {
 						campaigns: [],
 						defaultChainId: 0,
 						wallets: [],
 						networks: []
 					};
-					return {
-						execute: async () => {
-							_oldData = { ...this._data };
-							if (userInputData?.campaigns !== undefined) this._data.campaigns = userInputData.campaigns;
-							await this.resetRpcWallet();
-							if (builder?.setData) builder.setData(this._data);
-						},
-						undo: async () => {
-							this._data = { ..._oldData };
-							this.initializeWidgetConfig();
-							if (builder?.setData) builder.setData(this._data);
-						},
-						redo: () => { }
-					}
-				},
-				userInputDataSchema: formSchema.general.dataSchema,
-				userInputUISchema: formSchema.general.uiSchema,
-				customControls: formSchema.general.customControls
-			},
-			{
-				name: 'Theme Settings',
-				icon: 'palette',
-				command: (builder: any, userInputData: any) => {
 					let oldTag = {};
 					return {
 						execute: async () => {
-							if (!userInputData) return;
+							oldData = JSON.parse(JSON.stringify(this._data));
+							const {
+								campaigns,
+								...themeSettings
+							} = userInputData;
+
+							const generalSettings = {
+								campaigns
+							};
+							if (generalSettings.campaigns !== undefined) this._data.campaigns = generalSettings.campaigns;
+							await this.resetRpcWallet();
+							if (builder?.setData) builder.setData(this._data);
+
 							oldTag = JSON.parse(JSON.stringify(this.tag));
-							if (builder) builder.setTag(userInputData);
-							else this.setTag(userInputData);
-							if (this.dappContainer) this.dappContainer.setTag(userInputData);
+							if (builder?.setTag) builder.setTag(themeSettings);
+							else this.setTag(themeSettings);
+							if (this.dappContainer) this.dappContainer.setTag(themeSettings);
 						},
-						undo: () => {
-							if (!userInputData) return;
+						undo: async () => {
+							this._data = JSON.parse(JSON.stringify(oldData));
+							this.initializeWidgetConfig();
+							if (builder?.setData) builder.setData(this._data);
+
 							this.tag = JSON.parse(JSON.stringify(oldTag));
-							if (builder) builder.setTag(this.tag);
+							if (builder?.setTag) builder.setTag(this.tag);
 							else this.setTag(this.tag);
-							if (this.dappContainer) this.dappContainer.setTag(userInputData);
+							if (this.dappContainer) this.dappContainer.setTag(this.tag);
 						},
 						redo: () => { }
 					}
 				},
-				userInputDataSchema: formSchema.theme.dataSchema
+				userInputDataSchema: formSchema.dataSchema,
+				userInputUISchema: formSchema.uiSchema,
+				customControls: formSchema.customControls
 			}
 		];
 		return actions;
@@ -185,26 +179,26 @@ export default class ScomInvertorClaim extends Module {
 	}
 
 	private async resetRpcWallet() {
-    this.removeRpcWalletEvents();
-    const rpcWalletId = await this.state.initRpcWallet(this.defaultChainId);
-    const rpcWallet = this.rpcWallet;
-    const chainChangedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.ChainChanged, async (chainId: number) => {
-      this.initializeWidgetConfig();
-    });
-    const connectedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.Connected, async (connected: boolean) => {
-      this.initializeWidgetConfig(true);
-    });
-    this.rpcWalletEvents.push(chainChangedEvent, connectedEvent);
+		this.removeRpcWalletEvents();
+		const rpcWalletId = await this.state.initRpcWallet(this.defaultChainId);
+		const rpcWallet = this.rpcWallet;
+		const chainChangedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.ChainChanged, async (chainId: number) => {
+			this.initializeWidgetConfig();
+		});
+		const connectedEvent = rpcWallet.registerWalletEvent(this, Constants.RpcWalletEvent.Connected, async (connected: boolean) => {
+			this.initializeWidgetConfig(true);
+		});
+		this.rpcWalletEvents.push(chainChangedEvent, connectedEvent);
 
-    const data = {
-      defaultChainId: this.defaultChainId,
-      wallets: this.wallets,
-      networks: this.networks,
-      showHeader: this.showHeader,
-      rpcWalletId: rpcWallet.instanceId || ''
-    }
-    if (this.dappContainer?.setData) this.dappContainer.setData(data);
-  }
+		const data = {
+			defaultChainId: this.defaultChainId,
+			wallets: this.wallets,
+			networks: this.networks,
+			showHeader: this.showHeader,
+			rpcWalletId: rpcWallet.instanceId || ''
+		}
+		if (this.dappContainer?.setData) this.dappContainer.setData(data);
+	}
 
 	private async setData(value: IClaimBasicInfo) {
 		this._data = value;
@@ -308,17 +302,17 @@ export default class ScomInvertorClaim extends Module {
 	}
 
 	removeRpcWalletEvents() {
-    const rpcWallet = this.rpcWallet;
-    for (let event of this.rpcWalletEvents) {
-      rpcWallet.unregisterWalletEvent(event);
-    }
-    this.rpcWalletEvents = [];
-  }
+		const rpcWallet = this.rpcWallet;
+		for (let event of this.rpcWalletEvents) {
+			rpcWallet.unregisterWalletEvent(event);
+		}
+		this.rpcWalletEvents = [];
+	}
 
-  onHide() {
-    this.dappContainer.onHide();
-    this.removeRpcWalletEvents();
-  }
+	onHide() {
+		this.dappContainer.onHide();
+		this.removeRpcWalletEvents();
+	}
 
 	private initializeWidgetConfig = async (hideLoading?: boolean) => {
 		setTimeout(async () => {
